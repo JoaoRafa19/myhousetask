@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package categories;
+
+option go_package = "v1/proto";
+
+message Category {
+  int32 id = 1;
+    string name = 2;
+    string description = 3;
+    bool is_active = 4;
+}
+
+message CategoryResponse {
+  Category category = 1;
+}
+
+message CategoryFilterRequest {
+  string field = 1;
+  string value = 2;
+}
+
+message CategoryListResponse {
+  repeated Category categories = 1;
+}
+
+service CategoryService {
+    rpc Save(Category) returns (CategoryResponse);
+    rpc Find(CategoryFilterRequest) returns (CategoryListResponse);
+}
+
+
+
+message Users {
+  int32 id = 1;
+  string name = 2;
+  string email = 3;
+  string password = 4;
+  string role = 5;
+  bool is_active = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  string deleted_at = 9;
+}
+
+
