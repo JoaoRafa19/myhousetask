@@ -126,6 +126,35 @@ myapp/
 
 ---
 
+## Dependencias
+
+- Projeto
+  
+  ```
+  github.com/go-sql-driver/mysql v1.9.2
+  github.com/golang-migrate/migrate/v4 v4.18.3
+  google.golang.org/grpc v1.65.0
+  google.golang.org/protobuf v1.36.6
+  ```
+
+- protocgen
+
+  ```
+  google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  ```
+
+- sqlc
+
+  ```
+  go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+  ```
+
+- gRPC
+
+  ```
+  go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+  ```
+
 ## 🚀 Comandos Úteis
 
 ### Gerar arquivo Go a partir de arquivo .proto
@@ -147,4 +176,9 @@ docker run -d \
   -e MYSQL_PASSWORD=root \
   -e MYSQL_ROOT_PASSWORD=root \
   mysql:latest
+```
+
+### Gerar arquivos do sqlc
+```
+sqlc -f db/sqlc.yaml generate
 ```
