@@ -155,6 +155,13 @@ myapp/
   go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
   ```
 
+- templ
+  ```
+  go install github.com/a-h/templ/cmd/templ@latest
+  ```
+
+
+
 ## 🚀 Comandos Úteis
 
 ### Gerar arquivo Go a partir de arquivo .proto
@@ -181,4 +188,10 @@ docker run -d \
 ### Gerar arquivos do sqlc
 ```
 sqlc -f db/sqlc.yaml generate
+```
+
+
+
+```
+templ generate
 ```

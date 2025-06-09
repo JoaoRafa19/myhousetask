@@ -1,0 +1,17 @@
+# .gitignore
+
+# Arquivos gerados pelo Templ
+internal/web/view/**/*_templ.go
+
+# Arquivos gerados pelo gRPC/Protobuf
+proto/*_grpc.pb.go
+proto/*.pb.go
+
+# CSS gerado pelo Tailwind
+web/static/css/styles.css
+
+# Binários do Go
+myhousetask
+
+node_modules
+package-lock.json
