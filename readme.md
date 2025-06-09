@@ -1,8 +1,8 @@
-# 🧹 Projeto: TaskHome – Gerenciador de Tarefas Domésticas Compartilhadas
+# 🧹 Projeto: Myhousetask – Gerenciador de Tarefas Domésticas Compartilhadas
 
 ## 📘 Visão Geral
 
-O **TaskHome** é um aplicativo colaborativo para gerenciamento de tarefas domésticas entre membros de uma família. O objetivo é promover organização e divisão justa das tarefas, de forma clara, acessível e interativa, com sorteio de tarefas rotineiras e possibilidade de redistribuição entre os membros.
+O **Myhousetask** é um aplicativo colaborativo para gerenciamento de tarefas domésticas entre membros de uma família. O objetivo é promover organização e divisão justa das tarefas, de forma clara, acessível e interativa, com sorteio de tarefas rotineiras e possibilidade de redistribuição entre os membros.
 
 ---
 
@@ -50,7 +50,7 @@ O **TaskHome** é um aplicativo colaborativo para gerenciamento de tarefas domé
 
 ![img](/docs/arc_proto.png)
 
-A arquitetura do **TaskHome** é desenhada para ser moderna, reativa e eficiente, separando claramente as responsabilidades de cada parte do sistema, conforme ilustrado no diagrama visual (`docs/arc_proto.png`).
+A arquitetura do **Myhousetask** é desenhada para ser moderna, reativa e eficiente, separando claramente as responsabilidades de cada parte do sistema, conforme ilustrado no diagrama visual (`docs/arc_proto.png`).
 
 ### 1. Clientes (Frontend)
 
