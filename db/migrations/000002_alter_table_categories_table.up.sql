@@ -1,5 +1,0 @@
-ALTER TABLE categories 
-    RENAME COLUMN description TO DESCRIPTION,
-    RENAME COLUMN is_active TO IS_ACTIVE,
-    RENAME COLUMN name TO NAME,
-    RENAME COLUMN id TO ID;

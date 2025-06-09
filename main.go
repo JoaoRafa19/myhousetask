@@ -1,9 +1,7 @@
 package main
 
 import (
-	"JoaoRafa19/go-grpc-teste/category"
-	"JoaoRafa19/go-grpc-teste/migrations"
-	pb "JoaoRafa19/go-grpc-teste/proto"
+	m "JoaoRafa19/myhousetask/migrator"
 	"log"
 	"net"
 
@@ -11,7 +9,7 @@ import (
 )
 
 func main() {
-	db, err := migrations.Run()
+	db, err := m.Run()
 	if err != nil {
 		log.Fatalf("could not run migrations: %v", err)
 	}
@@ -25,7 +23,7 @@ func main() {
 	var opts []grpc.ServerOption
 	server := grpc.NewServer(opts...)
 
-	pb.RegisterCategoryServiceServer(server, category.NewCategoryServiceServer(db))
+	//	pb.RegisterCategoryServiceServer(server, category.NewCategoryServiceServer(db))
 
 	log.Printf("Server listening at %v", l.Addr())
 

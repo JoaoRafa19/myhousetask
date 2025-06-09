@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS categories (
-    id VARCHAR(36) NOT NULL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description TEXT,
-    is_active BOOLEAN NOT NULL
+    id varchar(36) NOT NULL PRIMARY KEY,
+    name varchar(255) NOT NULL,
+    description char(255),
+    is_active boolean NOT NULL
 ); 

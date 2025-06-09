@@ -1,26 +1,55 @@
-package migrations
+package migrator
 
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/joho/godotenv"
 )
 
 const (
 	dbDriver      = "mysql"
-	dbUser        = "root"
-	dbPass        = "root"
-	dbHost        = "localhost"
-	dbPort        = "3307"
-	dbName        = "testegrpc"
 	migrationsDir = "file://db/migrations"
 )
 
+var (
+	dbUser string
+	dbPass string
+	dbHost string
+	dbPort string
+	dbName string
+)
+
+func init() {
+	err := godotenv.Load("./.env")
+	if err != nil {
+		log.Printf("Erro ao carregar arquivo .env: %v\nCarregando variaveis de ambiente do sistema\n", err)
+	}
+	dbUser = getEnv("DB_USER", "user")
+	dbPass = getEnv("DB_PASS", "root")
+	dbHost = getEnv("DB_HOST", "localhost")
+	dbPort = getEnv("DB_PORT", "3308")
+	dbName = getEnv("DB_NAME", "myhousetask")
+}
+
+func getEnv(key string, fallback string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return fallback
+	}
+	return value
+}
+
 func Run() (*sql.DB, error) {
+
+	log.Println("Variaveis de ambiente carregadas com sucesso")
+	log.Println(dbUser + ":" + dbPass + "@tcp(" + dbHost + ":" + dbPort + ")/" + dbName)
+
 	// Conecta ao MySQL sem um banco de dados específico para poder criar o nosso.
 	initDb, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbHost+":"+dbPort+")/")
 	if err != nil {
@@ -64,9 +93,9 @@ func Run() (*sql.DB, error) {
 		}
 	}
 
-	errm := m.Up(); 
+	errm := m.Up()
 	if errm != nil && errm != migrate.ErrNoChange {
-		log.Fatalf("could not run migrations: %v", err)
+		log.Fatalf("could not run migrations: %v", errm)
 	}
 
 	if errm != nil && errm == migrate.ErrNoChange {

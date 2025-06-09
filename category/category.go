@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	pb "JoaoRafa19/go-grpc-teste/proto"
+	pb "JoaoRafa19/myhousetask/proto"
 )
 
 type CategoryServiceServer struct {
@@ -20,7 +20,7 @@ func NewCategoryServiceServer(db *sql.DB) *CategoryServiceServer {
 func (svc *CategoryServiceServer) Save(ctx context.Context, c *pb.Category) (*pb.CategoryResponse, error) {
     _, err := svc.db.ExecContext(ctx, "INSERT INTO categories (id, name, description, is_active) VALUES (?, ?, ?, ?)", c.Id, c.Name, c.Description, c.IsActive)
     if err != nil {
-        return nil, fmt.Errorf( "Error saving category: %w", err)
+        return nil, fmt.Errorf( "error saving category: %w", err)
     }
     return &pb.CategoryResponse{
         Category: c,
@@ -30,7 +30,7 @@ func (svc *CategoryServiceServer) Save(ctx context.Context, c *pb.Category) (*pb
 func (svc *CategoryServiceServer) Find(ctx context.Context, c *pb.CategoryFilterRequest) (*pb.CategoryListResponse, error) {
     rows, err := svc.db.QueryContext(ctx, "SELECT id, name, description, is_active FROM categories WHERE ? = ?", c.Field, c.Value)
     if err != nil {
-        return nil, fmt.Errorf( "Error finding category: %w", err)
+        return nil, fmt.Errorf( "error finding category: %w", err)
     }
     defer rows.Close()
 
@@ -41,7 +41,7 @@ func (svc *CategoryServiceServer) Find(ctx context.Context, c *pb.CategoryFilter
         var isActive bool
         err := rows.Scan(&id, &name, &description, &isActive)
         if err != nil {
-            return nil, fmt.Errorf( "Error scanning category: %w", err)
+            return nil, fmt.Errorf( "error scanning category: %w", err)
         }
 
         categories = append(categories, &pb.Category{
