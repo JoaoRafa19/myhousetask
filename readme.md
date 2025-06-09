@@ -1,7 +1,3 @@
-Claro! Abaixo está um **documento simples, direto e descritivo** do projeto, ideal para registrar a visão geral, o propósito, as tecnologias envolvidas e os primeiros passos técnicos já realizados.
-
----
-
 # 🧹 Projeto: TaskHome – Gerenciador de Tarefas Domésticas Compartilhadas
 
 ## 📘 Visão Geral
@@ -12,43 +8,64 @@ O **TaskHome** é um aplicativo colaborativo para gerenciamento de tarefas domé
 
 ## 🧾 Funcionalidades principais
 
-* 👨‍👩‍👧‍👦 **Sistema de famílias**
+* **👨‍👩‍👧‍👦 Sistema de famílias**
+    * Criação de famílias por um usuário.
+    * Entrada via código ou link de convite.
+    * Gerenciamento colaborativo de tarefas.
 
-  * Criação de famílias por um usuário
-  * Entrada via código ou link de convite
-  * Gerenciamento colaborativo de tarefas
+* **📋 Tarefas e rotinas**
+    * Criação de tarefas únicas e rotineiras.
+    * Sorteio diário de tarefas entre os membros.
+    * Redistribuição de tarefa (somente com aceite do novo membro).
+    * Status de tarefas: `pendente`, `em andamento`, `concluída`.
 
-* 📋 **Tarefas e rotinas**
+* **📅 Calendário**
+    * Visualização de tarefas por dia.
+    * Edição colaborativa de tarefas não rotineiras.
+    * Execução automática de rotinas diárias.
 
-  * Criação de tarefas únicas e rotineiras
-  * Sorteio diário de tarefas entre os membros
-  * Redistribuição de tarefa (somente com aceite do novo membro)
-  * Status de tarefas: `pendente`, `em andamento`, `concluída`
-
-* 📅 **Calendário**
-
-  * Visualização de tarefas por dia
-  * Edição colaborativa de tarefas não rotineiras
-  * Execução automática de rotinas diárias
-
-* 🔔 **Notificações em tempo real**
-
-  * Atualizações de status e responsabilidades via **WebSocket**
+* **🔔 Notificações em tempo real**
+    * Atualizações de status e responsabilidades via **WebSocket**.
 
 ---
 
 ## 🛠️ Tecnologias Utilizadas
 
-| Tecnologia    | Uso principal                             |
-| ------------- | ----------------------------------------- |
-| **Go**        | Backend (linguagem principal)             |
-| **sqlc**      | Geração de código a partir de SQL         |
-| **MySQL**     | Banco de dados relacional                 |
-| **WebSocket** | Comunicação em tempo real                 |
-| **gRPC**      | Comunicação entre microserviços e Flutter |
-| **Templ**     | Frontend SSR opcional em Go               |
-| **React**     | Frontend web alternativo (uso leve)       |
-| **Flutter**   | Frontend mobile principal                 |
+| Tecnologia  | Uso principal                              |
+| :---------- | :----------------------------------------- |
+| **Go** | Backend (linguagem principal)              |
+| **sqlc** | Geração de código a partir de SQL          |
+| **MySQL** | Banco de dados relacional                  |
+| **WebSocket** | Comunicação em tempo real                  |
+| **gRPC** | Comunicação entre microserviços e Flutter  |
+| **Templ** | Frontend SSR opcional em Go                |
+| **React** | Frontend web alternativo (uso leve)        |
+| **Flutter** | Frontend mobile principal                  |
+
+---
+
+## 🏗️ Arquitetura do Sistema
+
+***Projeto***
+
+![img](/docs/arc_proto.png)
+
+A arquitetura do **TaskHome** é desenhada para ser moderna, reativa e eficiente, separando claramente as responsabilidades de cada parte do sistema, conforme ilustrado no diagrama visual (`docs/arc_proto.png`).
+
+### 1. Clientes (Frontend)
+
+* **Flutter (App Mobile):** Cliente principal. Prioriza **gRPC** para comunicação rápida e se conecta via **WebSocket** para atualizações em tempo real.
+* **Go + Templ (App Web):** Alternativa web com renderização no servidor (SSR). Interage diretamente com as Regras de Negócio e usa **WebSocket** para sincronização.
+
+### 2. Backend (Servidor Go)
+
+* **Camada de Entrada (API):** Expõe **API gRPC**, **API REST (`chi`)**, e um **Servidor WebSocket**.
+* **Camada de Serviços (Regras de Negócio):** Contém a lógica principal do sistema (`internal/services/`), de forma agnóstica à API.
+* **Camada de Acesso a Dados (DAL):** Usa **`sqlc`** para gerar uma interface Go tipada e segura a partir de queries SQL.
+
+### 3. Banco de Dados
+
+* **MySQL:** Armazena todas as informações de forma persistente.
 
 ---
 
@@ -61,7 +78,7 @@ myapp/
 │   ├── query/             # Queries SQL com nomes para o sqlc
 │   └── gen/               # Código gerado por sqlc (structs + funções)
 ├── internal/
-│   ├── api/               # Handlers HTTP (REST)
+│   ├── api/               # Handlers HTTP (REST e gRPC)
 │   ├── ws/                # Lógica de WebSocket
 │   └── services/          # Regras de negócio
 ├── cmd/
@@ -74,45 +91,53 @@ myapp/
 
 ## 📜 Progresso atual
 
-* ✅ Schema SQL modelado com colunas em MAIÚSCULO e tabelas minúsculas
-* ✅ Arquivo `sqlc.yaml` configurado para ler `migrations` e `query`
-* ✅ Geração de entidades com `sqlc generate` funcionando
-* ✅ Configuração para tratar `NULL` como string vazia
-* ✅ Servidor Go inicializado com `chi`
+* ✅ Schema SQL modelado.
+* ✅ `sqlc.yaml` configurado e `sqlc generate` funcionando.
+* ✅ Servidor Go inicializado com `chi`.
 
 ---
 
-## 📈 Próximos passos sugeridos
+## 🧠 Decisões de Design e Convenções
 
-1. [ ] Criar rotas REST para CRUD de usuários, famílias e tarefas
-2. [ ] Implementar sorteio automático de tarefas rotineiras
-3. [ ] Criar canal WebSocket para atualização em tempo real
-4. [ ] Definir padrão de autenticação (token JWT ou similar)
-5. [ ] Iniciar o frontend em Flutter (ou Templ para web)
-6. [ ] Escrever testes e cobertura básica de endpoints
+* **Nomenclatura no Banco de Dados:** Tabelas são `minúsculas` (ex: `users`) e colunas são `MAIÚSCULAS` (ex: `NAME`). Essa convenção melhora a legibilidade das queries SQL e diferencia claramente as estruturas do banco no código Go gerado.
+* **Tratamento de Nulos com `sqlc`:** A opção `emit_pointers_for_null_types: false` foi usada para que campos `NULL` no banco sejam gerados como tipos zero em Go (ex: string vazia `""`) em vez de ponteiros (como `*sql.NullString`). Isso simplifica a manipulação de dados na camada de serviço, evitando verificações constantes de `nil`.
+* **Chaves Primárias:** Utiliza-se `CHAR(36)` para UUIDs como chaves primárias para garantir identificadores únicos e não sequenciais, o que é mais seguro e escalável.
 
 ---
 
-## ✍️ Observações
+## 📈 Próximos passos detalhados
 
-* O projeto é orientado a evoluir com múltiplos frontends: **Flutter** no mobile e **Templ/React** na web.
-* A lógica de sorteio e redistribuição de tarefas será feita no backend e registrada no banco de forma audível.
-* O sistema prioriza **clareza**, **transparência** e **colaboração familiar**.
+1.  **Criar rotas REST para CRUD de Usuários**
+    * `POST /users` - Criar novo usuário.
+    * `GET /users/{id}` - Obter dados de um usuário.
+    * `PUT /users/{id}` - Atualizar dados de um usuário.
+    * `DELETE /users/{id}` - Desativar um usuário.
+2.  **Definir padrão de autenticação com JWT**
+    * Criar rota `POST /login` que retorna um token JWT.
+    * Implementar um middleware em `chi` para validar o token em rotas protegidas.
+3.  **Implementar sorteio automático de tarefas**
+    * Criar um worker/goroutine que executa uma vez ao dia.
+    * O worker deve buscar as tarefas rotineiras, sortear os responsáveis entre os membros ativos da família e salvar os resultados.
+4.  **Criar canal WebSocket para atualização de status**
+    * Definir um hub de WebSocket que gerencia as conexões.
+    * Quando uma tarefa for atualizada (ex: via API REST), o serviço correspondente deve notificar o hub, que transmitirá a mensagem para os clientes relevantes.
+5.  **Iniciar o frontend em Flutter (ou Templ)**
+    * Começar a construir as telas de login, registro e a tela principal de tarefas.
 
 ---
 
-Se quiser, posso salvar isso como um PDF ou Markdown para você versionar no projeto. Deseja exportar em algum formato?
+## 🚀 Comandos Úteis
 
+### Gerar arquivo Go a partir de arquivo .proto
 
-### Gerar arquivo go a partir de arquivo .proto
 ```shell
 protoc --go_out=. --go_opt=paths=source_relative \
          --go-grpc_out=. --go-grpc_opt=paths=source_relative \
          proto/category.proto
 ```
 
+### Criar ou executar o banco MySQL no terminal via Docker
 
-### Criar ou executar o banco mysql no terminal via docker
 ```shell
 docker run -d \
   --name mysql-myhousetask \
