@@ -159,7 +159,10 @@ myapp/
   ```
   go install github.com/a-h/templ/cmd/templ@latest
   ```
-
+- air
+  ```
+  go install github.com/air-verse/air@latest
+  ```
 
 
 ## 🚀 Comandos Úteis
