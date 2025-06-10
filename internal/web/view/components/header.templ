@@ -10,9 +10,9 @@ templ Header(title string) {
 		<h1 class="text-xl font-semibold text-gray-700">{ title }</h1>
 		<div x-data="{ dropdownOpen: false }" class="relative">
 			<button @click="dropdownOpen = !dropdownOpen" class="flex items-center space-x-2">
-				<img class="h-9 w-9 rounded-full object-cover" src="[https://placehold.co/100x100/E2E8F0/4A5568?text=A](https://placehold.co/100x100/E2E8F0/4A5568?text=A)" alt="Avatar do administrador"/>
+				<img class="h-9 w-9 rounded-full object-cover" src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" alt="Avatar do administrador"/>
 				<span class="hidden md:block font-medium">Admin User</span>
-				<svg xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-gray-500"><path d="m6 9 6 6 6-6"></path></svg>
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-gray-500"><path d="m6 9 6 6 6-6"></path></svg>
 			</button>
 			<div x-show="dropdownOpen" @click.away="dropdownOpen = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20" x-cloak>
 				<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Perfil</a>

@@ -1,6 +1,6 @@
 CREATE TABLE calendar_events (
     id char(36) PRIMARY KEY,
-    family_id char(36),
+    family_id int,
     task_id char(36),
     title char(50) NOT NULL,
     description char(255),

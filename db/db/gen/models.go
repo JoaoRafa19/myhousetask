@@ -12,7 +12,7 @@ import (
 
 type CalendarEvent struct {
 	ID          string         `json:"id"`
-	FamilyID    sql.NullString `json:"family_id"`
+	FamilyID    sql.NullInt32  `json:"family_id"`
 	TaskID      sql.NullString `json:"task_id"`
 	Title       string         `json:"title"`
 	Description sql.NullString `json:"description"`
@@ -30,22 +30,24 @@ type Category struct {
 }
 
 type Family struct {
-	ID        string       `json:"id"`
-	Name      string       `json:"name"`
-	CreatedAt sql.NullTime `json:"created_at"`
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	CreatedAt   sql.NullTime   `json:"created_at"`
+	IsActive    sql.NullBool   `json:"is_active"`
+	Description sql.NullString `json:"description"`
 }
 
 type FamilyInvite struct {
-	ID        string         `json:"id"`
-	FamilyID  sql.NullString `json:"family_id"`
-	Code      string         `json:"code"`
-	ExpiresAt sql.NullTime   `json:"expires_at"`
-	CreatedAt sql.NullTime   `json:"created_at"`
+	ID        string        `json:"id"`
+	FamilyID  sql.NullInt32 `json:"family_id"`
+	Code      string        `json:"code"`
+	ExpiresAt sql.NullTime  `json:"expires_at"`
+	CreatedAt sql.NullTime  `json:"created_at"`
 }
 
 type FamilyMember struct {
 	ID       string         `json:"id"`
-	FamilyID sql.NullString `json:"family_id"`
+	FamilyID sql.NullInt32  `json:"family_id"`
 	UserID   sql.NullString `json:"user_id"`
 	Role     sql.NullString `json:"role"`
 	JoinedAt sql.NullTime   `json:"joined_at"`
@@ -53,7 +55,7 @@ type FamilyMember struct {
 
 type Task struct {
 	ID            string          `json:"id"`
-	FamilyID      sql.NullString  `json:"family_id"`
+	FamilyID      sql.NullInt32   `json:"family_id"`
 	Title         string          `json:"title"`
 	Description   sql.NullString  `json:"description"`
 	IsRecurring   sql.NullBool    `json:"is_recurring"`

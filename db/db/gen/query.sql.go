@@ -7,7 +7,55 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
+
+const createFamily = `-- name: CreateFamily :exec
+INSERT INTO families (name, description) VALUES (?, ?)
+`
+
+type CreateFamilyParams struct {
+	Name        string         `json:"name"`
+	Description sql.NullString `json:"description"`
+}
+
+func (q *Queries) CreateFamily(ctx context.Context, arg CreateFamilyParams) error {
+	_, err := q.db.ExecContext(ctx, createFamily, arg.Name, arg.Description)
+	return err
+}
+
+const getLastFiveFamilies = `-- name: GetLastFiveFamilies :many
+SELECT id, name, created_at, is_active, description FROM families ORDER BY created_at DESC LIMIT 5
+`
+
+func (q *Queries) GetLastFiveFamilies(ctx context.Context) ([]Family, error) {
+	rows, err := q.db.QueryContext(ctx, getLastFiveFamilies)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Family
+	for rows.Next() {
+		var i Family
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.IsActive,
+			&i.Description,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
 
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, name, email, password_hash, created_at FROM users WHERE email = ?

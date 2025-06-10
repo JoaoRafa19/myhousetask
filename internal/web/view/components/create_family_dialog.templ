@@ -1,0 +1,35 @@
+package components
+
+templ CreateFamilyDialog() {
+	// O ID "createFamilyDialog" é crucial para o JavaScript encontrá-lo.
+	<dialog id="createFamilyDialog" class="p-12 w-1/3  rounded-xl shadow-2xl backdrop:bg-black/50 backdrop:backdrop-blur-sm">
+		<div class="w-full max-w-md mx-auto">
+			<div class="flex justify-between items-center mb-6">
+				<h3 class="text-2xl font-bold text-gray-800">Criar Nova Família</h3>
+				<button onclick="document.getElementById('createFamilyDialog').close();" class="text-gray-500 hover:text-gray-800">
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+				</button>
+			</div>
+			<form action="/create-family" method="post" class="flex flex-col gap-4">
+				<div class="space-y-4">
+					<div>
+						<label for="familyName" class="block text-sm font-medium text-gray-700">Nome da Família</label>
+						<input type="text" id="familyName" name="familyName" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
+					</div>
+					<div>
+						<label for="familyDescription" class="block text-sm font-medium text-gray-700">Descrição (Opcional)</label>
+						<textarea id="familyDescription" name="familyDescription" rows="3" class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+					</div>
+				</div>
+				<div class="mt-8 flex justify-center gap-4">
+					<button type="button" onclick="document.getElementById('createFamilyDialog').close();" class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200">
+						Cancelar
+					</button>
+					<button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700">
+						Criar Família
+					</button>
+				</div>
+			</form>
+		</div>
+	</dialog>
+}

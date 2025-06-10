@@ -1,6 +1,6 @@
 CREATE TABLE family_members (
     id char(36) PRIMARY KEY,
-    family_id char(36),
+    family_id int,
     user_id char(36),
     role varchar(20) DEFAULT 'MEMBER',
     joined_at timestamp DEFAULT CURRENT_TIMESTAMP,

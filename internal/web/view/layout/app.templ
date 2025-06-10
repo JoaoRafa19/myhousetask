@@ -17,6 +17,11 @@ templ AppLayout(title string, children templ.Component) {
 					-moz-osx-font-smoothing: grayscale;
 				}
 				[x-cloak] { display: none !important; }
+
+                dialog::backdrop {
+					background-color: rgba(0, 0, 0, 0.5);
+					backdrop-filter: blur(2px);
+				}
 			</style>
 		</head>
 		<body class="bg-gray-50 text-gray-800">

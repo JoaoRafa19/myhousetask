@@ -1,6 +1,6 @@
 CREATE TABLE tasks (
     id char(36) PRIMARY KEY,
-    family_id char(36),
+    family_id int,
     title char(50) NOT NULL,
     description char(255),
     is_recurring boolean DEFAULT FALSE,

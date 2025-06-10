@@ -9,6 +9,8 @@ import (
 )
 
 type Querier interface {
+	CreateFamily(ctx context.Context, arg CreateFamilyParams) error
+	GetLastFiveFamilies(ctx context.Context) ([]Family, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 }
 

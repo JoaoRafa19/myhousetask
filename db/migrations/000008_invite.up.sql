@@ -1,6 +1,6 @@
 CREATE TABLE family_invites (
     id char(36) PRIMARY KEY,
-    family_id char(36),
+    family_id int,
     code char(255) UNIQUE NOT NULL,
     expires_at timestamp,
     created_at timestamp DEFAULT CURRENT_TIMESTAMP,
