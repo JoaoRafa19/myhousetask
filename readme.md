@@ -178,14 +178,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
 ### Criar ou executar o banco MySQL no terminal via Docker
 
 ```shell
-docker run -d \
-  --name mysql-myhousetask \
-  -p 3308:3306 \
-  -e MYSQL_DATABASE=myhousetask \
-  -e MYSQL_USER=user \
-  -e MYSQL_PASSWORD=root \
-  -e MYSQL_ROOT_PASSWORD=root \
-  mysql:latest
+docker run -d --name mysql-myhousetask -p 3308:3306 -e MYSQL_DATABASE=myhousetask -e MYSQL_USER=user -e MYSQL_PASSWORD=root -e MYSQL_ROOT_PASSWORD=root mysql:latest
 ```
 
 ### Gerar arquivos do sqlc
@@ -194,7 +187,7 @@ sqlc -f db/sqlc.yaml generate
 ```
 
 
-
+### Gerar arquivos _templ.go
 ```
 templ generate
 ```
