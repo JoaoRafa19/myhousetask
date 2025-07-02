@@ -1,7 +1,7 @@
 package services
 
 import (
-	db "JoaoRafa19/myhousetask/db/db/gen"
+	db "JoaoRafa19/myhousetask/db/gen"
 	"context"
 	"fmt"
 )
