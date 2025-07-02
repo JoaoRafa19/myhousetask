@@ -15,3 +15,7 @@ myhousetask
 
 node_modules
 package-lock.json
+
+tmp
+tmp/**
+*.lock.json 
