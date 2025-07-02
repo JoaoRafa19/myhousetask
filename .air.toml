@@ -37,7 +37,7 @@ tmp_dir = "tmp"
 [log]
   main_only = false
   silent = false
-  time = false
+  time = true
 
 [misc]
   clean_on_exit = false
@@ -48,5 +48,5 @@ tmp_dir = "tmp"
   proxy_port = 0
 
 [screen]
-  clear_on_rebuild = false
+  clear_on_rebuild = true
   keep_scroll = true

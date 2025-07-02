@@ -9,9 +9,16 @@ import (
 )
 
 type Querier interface {
+	CountFamilies(ctx context.Context) (int64, error)
+	// Adapte o 'completed_at' se o nome da coluna for diferente
+	CountTasksCompletedToday(ctx context.Context) (int64, error)
+	CountTasksPending(ctx context.Context) (int64, error)
+	CountUsers(ctx context.Context) (int64, error)
 	CreateFamily(ctx context.Context, arg CreateFamilyParams) error
+	DashboardPage(ctx context.Context) ([]DashboardPageRow, error)
 	GetLastFiveFamilies(ctx context.Context) ([]Family, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	ListRecentFamilies(ctx context.Context) ([]Family, error)
 }
 
 var _ Querier = (*Queries)(nil)

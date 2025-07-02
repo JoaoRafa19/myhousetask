@@ -28,11 +28,11 @@ func main() {
 	fs := http.FileServer(http.Dir("./web/static"))
 	router.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	router.HandleFunc("/", handlers.AdminHandler)
+	router.HandleFunc("/", handler.AdminHandler)
 
-	fmt.Println("HTTP server listening on port 8000")
+	fmt.Println("HTTP server listening on port 5000")
 
-	if err := http.ListenAndServe(":8000", router); err != nil {
+	if err := http.ListenAndServe(":5000", router); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }

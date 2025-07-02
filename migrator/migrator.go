@@ -62,7 +62,7 @@ func Run() (*sql.DB, error) {
 	initDb.Close()
 
 	// Agora, conecta ao banco de dados que sabemos que existe.
-	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbHost+":"+dbPort+")/"+dbName)
+	db, err := sql.Open(dbDriver, dbUser+":"+dbPass+"@tcp("+dbHost+":"+dbPort+")/"+dbName+"?parseTime=true")
 	if err != nil {
 		return nil, err
 	}
