@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	db "JoaoRafa19/myhousetask/db/db/gen"
+	db "JoaoRafa19/myhousetask/db/gen"
 	"JoaoRafa19/myhousetask/internal/web/view/pages"
 	"database/sql"
 	"net/http"
