@@ -1,33 +1,24 @@
-# 🧹 Projeto: Myhousetask – Gerenciador de Tarefas Domésticas Compartilhadas
+# [🧹 Projeto: Myhousetask – Gerenciador de Tarefas Domésticas Compartilhadas ](-projeto-myhousetask--gerenciador-de-tarefas-domésticas-compartilhadas)
 
-# Sumário da Documentação de Desenvolvimento
+- [Projeto: Myhousetask – Gerenciador de Tarefas Domésticas Compartilhadas](#-projeto-myhousetask--gerenciador-de-tarefas-domésticas-compartilhadas)
+- [Visão Geral](#-visão-geral)
+- [Funcionalidades principais](#-funcionalidades-principais)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Arquitetura do Sistema](#-arquitetura-do-sistema)
+- [Estrutura Inicial do Projeto](#-estrutura-inicial-do-projeto)
+- [Progresso atual](#-progresso-atual)
+- [Decisões de Design e Convenções](#-decisões-de-design-e-convenções)
+- [Próximos passos detalhados](#-próximos-passos-detalhados)
+- [Dependencias](#dependencias)
+- [Comandos Úteis](#-comandos-úteis)
 
-- [Visão Geral do Projeto](#visão-geral-do-projeto)
-- [Estrutura de Pastas e Organização](#estrutura-de-pastas-e-organização)
-- [Configuração do Ambiente de Desenvolvimento](#configuração-do-ambiente-de-desenvolvimento)
-- [Migrações de Banco de Dados](#migrações-de-banco-de-dados)
-- [Geração de Código com SQLC](#geração-de-código-com-sqlc)
-- [Definição e Geração de Serviços gRPC (Protobuf)](#definição-e-geraçãode-serviços-grpc-protobuf)
-- [Implementação de Handlers e Serviços](#implementação-de-handlers-e-serviços)
-- [Templates e Componentes Web (Templ)](#templates-e-componentes-web-templ)
-- [Estilização com Tailwind CSS](#estilização-com-tailwind-css)
-- [Testes (Unitários e de Integração)](#testes-unitários-e-de-integração)
-- [Containerização com Docker e Docker Compose](#containerização-com-docker-e-docker-compose)
-- [Boas Práticas de Versionamento e Documentação](#boas-práticas-de-versionamento-e-documentação)
-- [Segurança e Autenticação](#segurança-e-autenticação)
-- [Integração Contínua (CI/CD)](#integração-contínua-cicd)
-- [Monitoramento e Observabilidade](#monitoramento-e-observabilidade)
-- [Referências e Links Úteis](#referências-e-links-úteis)
-
----
-
-## 📘 Visão Geral
+## [📘 Visão Geral](-visão-geral)
 
 O **Myhousetask** é um aplicativo colaborativo para gerenciamento de tarefas domésticas entre membros de uma família. O objetivo é promover organização e divisão justa das tarefas, de forma clara, acessível e interativa, com sorteio de tarefas rotineiras e possibilidade de redistribuição entre os membros.
 
 ---
 
-## 🧾 Funcionalidades principais
+## [🧾 Funcionalidades principais](-funcionalidades-principais)
 
 * **👨‍👩‍👧‍👦 Sistema de famílias**
     * Criação de famílias por um usuário.
