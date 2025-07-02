@@ -4,11 +4,22 @@ import (
 	db "JoaoRafa19/myhousetask/db/db/gen"
 	"JoaoRafa19/myhousetask/internal/web/view/pages"
 	"database/sql"
+	"log"
 	"net/http"
 )
 
-func AdminHandler(w http.ResponseWriter, r *http.Request) {
-	dashboard := pages.DashboardPage()
+func (h *Handler) AdminHandler(w http.ResponseWriter, r *http.Request) {
+
+	data, err := h.dashboardService.GetDashboardData()
+	if err != nil {
+		log.Printf("Error getting dashboard data: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	log.Println(data)
+
+	dashboard := pages.DashboardPage(&data)
 
 	dashboard.Render(r.Context(), w)
 }

@@ -60,6 +60,7 @@ type Task struct {
 	Description   sql.NullString  `json:"description"`
 	IsRecurring   sql.NullBool    `json:"is_recurring"`
 	RecurringDays json.RawMessage `json:"recurring_days"`
+	Status        sql.NullString  `json:"status"`
 	CreatedBy     sql.NullString  `json:"created_by"`
 	CreatedAt     sql.NullTime    `json:"created_at"`
 }
