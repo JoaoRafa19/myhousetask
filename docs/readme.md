@@ -1,24 +1,31 @@
-# [🧹 Projeto: Myhousetask – Gerenciador de Tarefas Domésticas Compartilhadas ](-projeto-myhousetask--gerenciador-de-tarefas-domésticas-compartilhadas)
+# 🧹 Projeto: MyHouseTask – Gerenciador de Tarefas Domésticas Compartilhadas
 
-- [Projeto: Myhousetask – Gerenciador de Tarefas Domésticas Compartilhadas](#-projeto-myhousetask--gerenciador-de-tarefas-domésticas-compartilhadas)
-- [Visão Geral](#-visão-geral)
-- [Funcionalidades principais](#-funcionalidades-principais)
-- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-- [Arquitetura do Sistema](#-arquitetura-do-sistema)
-- [Estrutura Inicial do Projeto](#-estrutura-inicial-do-projeto)
-- [Progresso atual](#-progresso-atual)
-- [Decisões de Design e Convenções](#-decisões-de-design-e-convenções)
-- [Próximos passos detalhados](#-próximos-passos-detalhados)
-- [Dependencias](#dependencias)
-- [Comandos Úteis](#-comandos-úteis)
-
-## [📘 Visão Geral](-visão-geral)
-
-O **Myhousetask** é um aplicativo colaborativo para gerenciamento de tarefas domésticas entre membros de uma família. O objetivo é promover organização e divisão justa das tarefas, de forma clara, acessível e interativa, com sorteio de tarefas rotineiras e possibilidade de redistribuição entre os membros.
+Este documento serve como um guia central para o desenvolvimento do MyHouseTask, detalhando a arquitetura, tecnologias, progresso e próximos passos.
 
 ---
 
-## [🧾 Funcionalidades principais](-funcionalidades-principais)
+### Índice
+
+- [Visão Geral](#-visão-geral)
+- [Funcionalidades Principais](#-funcionalidades-principais)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Arquitetura do Sistema](#-arquitetura-do-sistema)
+- [Estrutura Inicial do Projeto](#-estrutura-inicial-do-projeto)
+- [Progresso Atual](#-progresso-atual)
+- [Decisões de Design e Convenções](#-decisões-de-design-e-convenções)
+- [Próximos Passos Detalhados](#-próximos-passos-detalhados)
+- [Dependências](#dependências)
+- [Comandos Úteis](#-comandos-úteis)
+
+---
+
+## 📘 Visão Geral
+
+O **MyHouseTask** é um aplicativo colaborativo para gerenciamento de tarefas domésticas entre membros de uma família. O objetivo é promover organização e divisão justa das tarefas, de forma clara, acessível e interativa, com sorteio de tarefas rotineiras e possibilidade de redistribuição entre os membros.
+
+---
+
+## 🧾 Funcionalidades Principais
 
 * **👨‍👩‍👧‍👦 Sistema de famílias**
     * Criação de famílias por um usuário.
@@ -48,7 +55,7 @@ O **Myhousetask** é um aplicativo colaborativo para gerenciamento de tarefas do
 | **Go** | Backend (linguagem principal)              |
 | **sqlc** | Geração de código a partir de SQL          |
 | **MySQL** | Banco de dados relacional                  |
-| **WebSocket** | Comunicação em tempo real                  |
+| **WebSocket**| Comunicação em tempo real                  |
 | **gRPC** | Comunicação entre microserviços e Flutter  |
 | **Templ** | Frontend SSR opcional em Go                |
 | **React** | Frontend web alternativo (uso leve)        |
@@ -62,7 +69,7 @@ O **Myhousetask** é um aplicativo colaborativo para gerenciamento de tarefas do
 
 ![img](/docs/arc_proto.png)
 
-A arquitetura do **Myhousetask** é desenhada para ser moderna, reativa e eficiente, separando claramente as responsabilidades de cada parte do sistema, conforme ilustrado no diagrama visual (`docs/arc_proto.png`).
+A arquitetura do **MyHouseTask** é desenhada para ser moderna, reativa e eficiente, separando claramente as responsabilidades de cada parte do sistema, conforme ilustrado no diagrama visual (`docs/arc_proto.png`).
 
 ### 1. Clientes (Frontend)
 
@@ -101,7 +108,7 @@ myapp/
 
 ---
 
-## 📜 Progresso atual
+## 📜 Progresso Atual
 
 * ✅ Schema SQL modelado.
 * ✅ `sqlc.yaml` configurado e `sqlc generate` funcionando.
@@ -117,7 +124,7 @@ myapp/
 
 ---
 
-## 📈 Próximos passos detalhados
+## 📈 Próximos Passos Detalhados
 
 1.  **Criar rotas REST para CRUD de Usuários**
     * `POST /users` - Criar novo usuário.
@@ -138,44 +145,41 @@ myapp/
 
 ---
 
-## Dependencias
+## Dependências
 
-- Projeto
-  
+- **Projeto**
   ```
-  github.com/go-sql-driver/mysql v1.9.2
-  github.com/golang-migrate/migrate/v4 v4.18.3
+  [github.com/go-sql-driver/mysql](https://github.com/go-sql-driver/mysql) v1.9.2
+  [github.com/golang-migrate/migrate/v4](https://github.com/golang-migrate/migrate/v4) v4.18.3
   google.golang.org/grpc v1.65.0
   google.golang.org/protobuf v1.36.6
   ```
 
-- protocgen
-
+- **protoc-gen**
   ```
   google.golang.org/protobuf/cmd/protoc-gen-go@latest
   ```
 
-- sqlc
-
+- **sqlc**
   ```
-  go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+  go install [github.com/sqlc-dev/sqlc/cmd/sqlc@latest](https://github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
   ```
 
-- gRPC
-
+- **gRPC**
   ```
   go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
   ```
 
-- templ
+- **templ**
   ```
-  go install github.com/a-h/templ/cmd/templ@latest
+  go install [github.com/a-h/templ/cmd/templ@latest](https://github.com/a-h/templ/cmd/templ@latest)
   ```
-- air
+- **air**
   ```
-  go install github.com/air-verse/air@latest
+  go install [github.com/air-verse/air@latest](https://github.com/air-verse/air@latest)
   ```
 
+---
 
 ## 🚀 Comandos Úteis
 
@@ -194,12 +198,13 @@ docker run -d --name mysql-myhousetask -p 3308:3306 -e MYSQL_DATABASE=myhousetas
 ```
 
 ### Gerar arquivos do sqlc
-```
+
+```shell
 sqlc -f db/sqlc.yaml generate
 ```
 
-
 ### Gerar arquivos _templ.go
-```
+
+```shell
 templ generate
 ```
