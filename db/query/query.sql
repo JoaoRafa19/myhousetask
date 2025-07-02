@@ -30,11 +30,10 @@ SELECT count(*) FROM families;
 SELECT count(*) FROM users;
 
 -- name: CountTasksCompletedToday :one
--- Adapte o 'completed_at' se o nome da coluna for diferente
-SELECT count(*) FROM tasks WHERE status = 'concluída' AND DATE(created_at) = CURDATE();
+SELECT count(*) FROM tasks WHERE status = 'completed' AND DATE(completed_at) = CURDATE();
 
 -- name: CountTasksPending :one
-SELECT count(*) FROM tasks WHERE status = 'pendente';
+SELECT count(*) FROM tasks WHERE status = 'pending';
 
 -- name: ListRecentFamilies :many
 SELECT * FROM families

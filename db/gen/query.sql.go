@@ -22,10 +22,9 @@ func (q *Queries) CountFamilies(ctx context.Context) (int64, error) {
 }
 
 const countTasksCompletedToday = `-- name: CountTasksCompletedToday :one
-SELECT count(*) FROM tasks WHERE status = 'concluída' AND DATE(created_at) = CURDATE()
+SELECT count(*) FROM tasks WHERE status = 'completed' AND DATE(completed_at) = CURDATE()
 `
 
-// Adapte o 'completed_at' se o nome da coluna for diferente
 func (q *Queries) CountTasksCompletedToday(ctx context.Context) (int64, error) {
 	row := q.db.QueryRowContext(ctx, countTasksCompletedToday)
 	var count int64
@@ -34,7 +33,7 @@ func (q *Queries) CountTasksCompletedToday(ctx context.Context) (int64, error) {
 }
 
 const countTasksPending = `-- name: CountTasksPending :one
-SELECT count(*) FROM tasks WHERE status = 'pendente'
+SELECT count(*) FROM tasks WHERE status = 'pending'
 `
 
 func (q *Queries) CountTasksPending(ctx context.Context) (int64, error) {

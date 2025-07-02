@@ -10,7 +10,6 @@ import (
 
 type Querier interface {
 	CountFamilies(ctx context.Context) (int64, error)
-	// Adapte o 'completed_at' se o nome da coluna for diferente
 	CountTasksCompletedToday(ctx context.Context) (int64, error)
 	CountTasksPending(ctx context.Context) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
