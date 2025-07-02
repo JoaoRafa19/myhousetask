@@ -19,3 +19,4 @@ package-lock.json
 tmp
 tmp/**
 *.lock.json 
+*.log
