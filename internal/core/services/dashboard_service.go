@@ -11,7 +11,7 @@ type DashboardData struct {
 	TotalUsers               int64
 	TotalTasksCompletedToday int64
 	TotalTasksPending        int64
-	RecentFamilies           []db.Family
+	RecentFamilies           []db.ListRecentFamiliesRow
 }
 
 type DashboardService struct {
@@ -20,6 +20,14 @@ type DashboardService struct {
 
 func NewDashboardService(db *db.Queries) *DashboardService {
 	return &DashboardService{db: db}
+}
+
+func (s *DashboardService) GetWeeklyActivity() ([]db.GetWeeklyTaskCompletionStatsRow, error) {
+	wekelyActivity, err := s.db.GetWeeklyTaskCompletionStats(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return wekelyActivity, nil
 }
 
 func (s *DashboardService) GetDashboardData() (DashboardData, error) {

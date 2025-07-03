@@ -17,7 +17,8 @@ type Querier interface {
 	DashboardPage(ctx context.Context) ([]DashboardPageRow, error)
 	GetLastFiveFamilies(ctx context.Context) ([]Family, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
-	ListRecentFamilies(ctx context.Context) ([]Family, error)
+	GetWeeklyTaskCompletionStats(ctx context.Context) ([]GetWeeklyTaskCompletionStatsRow, error)
+	ListRecentFamilies(ctx context.Context) ([]ListRecentFamiliesRow, error)
 }
 
 var _ Querier = (*Queries)(nil)

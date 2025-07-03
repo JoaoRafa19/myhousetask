@@ -205,6 +205,3 @@ go-grpc-teste/
 - [Tailwind CSS](https://tailwindcss.com/docs/installation)
 - [Templ](https://templ.guide/)
 
----
-
-Se precisar de exemplos de código, templates de documentação, ou scripts específicos para algum dos processos acima, posso gerar sob demanda. Informe qual parte deseja detalhar ainda mais!

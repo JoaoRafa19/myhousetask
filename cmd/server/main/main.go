@@ -7,32 +7,67 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"path/filepath"
+	"strings"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func main() {
-	router := http.NewServeMux()
-
 	mydb, err := m.Run()
-
 	if err != nil {
 		log.Fatalf("could not run migrations: %v", err)
 	}
 	defer mydb.Close()
 
 	database := db.New(mydb)
+	render := handlers.NewRenderHandler(database)
+	api := handlers.NewApiHandler(database)
 
-	handler := handlers.NewHandler(database)
+	mux := chi.NewRouter()
 
-	router.HandleFunc("POST /create-family", handler.CreateFamilyHandler)
+	workDir, _ := filepath.Abs(".")
+	filesDir := http.Dir(filepath.Join(workDir, "web", "static"))
 
-	fs := http.FileServer(http.Dir("./web/static"))
-	router.Handle("/static/", http.StripPrefix("/static/", fs))
+	FileServer(mux, "/static", filesDir)
 
-	router.HandleFunc("/", handler.AdminHandler)
+	mux.Get("/", render.DashboardHandler)
 
-	fmt.Println("HTTP server listening on port 5000")
+	mux.Route("/api", func(r chi.Router) {
+		r.Group(func(r chi.Router) {
+			r.Get("/charts/weekly-activity", api.WeeklyActivityHandler)
+			r.Post("/create-family", api.CreateFamilyHandler)
+		})
+	})
+	
+	mux.Route("/htmx", func(r chi.Router) {
+		r.Get("/families-table", render.FamiliesTableHTMXHandler)
+		r.Get("/stats-card", render.HTMXStatusCard)
+	})
 
-	if err := http.ListenAndServe(":5000", router); err != nil {
+
+	fmt.Println("HTTP server listening on port 3000")
+	if err := http.ListenAndServe(":3000", mux); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
+}
+
+// FileServer convenientemente serve arquivos estáticos de um diretório.
+// Esta é uma função helper recomendada pela própria documentação do Chi.
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit URL parameters.")
+	}
+
+	fs := http.StripPrefix(path, http.FileServer(root))
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
+		fs.ServeHTTP(w, r)
+	})
 }

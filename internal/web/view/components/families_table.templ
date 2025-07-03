@@ -1,7 +1,12 @@
+// internal/web/view/components/families_table.templ
 package components
 
+import (
+	"fmt"
+	"JoaoRafa19/myhousetask/db/gen"
+)
 
-templ FamiliesTable() {
+templ FamiliesTable(families []db.ListRecentFamiliesRow) {
 	<div class="mt-8 bg-white p-6 rounded-xl shadow-md">
 		<h3 class="font-semibold text-lg text-gray-800">Famílias Recém-Cadastradas</h3>
 		<div class="mt-4 overflow-x-auto">
@@ -16,27 +21,34 @@ templ FamiliesTable() {
 					</tr>
 				</thead>
 				<tbody class="divide-y">
-					<tr>
-						<td class="px-4 py-3 text-sm font-mono text-gray-500">fam-a1b2c3d4</td>
-						<td class="px-4 py-3 font-medium">Família Silva</td>
-						<td class="px-4 py-3 text-sm">5</td>
-						<td class="px-4 py-3 text-sm">08/06/2025</td>
-						<td class="px-4 py-3"><span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Ativa</span></td>
-					</tr>
-					<tr>
-						<td class="px-4 py-3 text-sm font-mono text-gray-500">fam-e5f6g7h8</td>
-						<td class="px-4 py-3 font-medium">Residência Oliveira</td>
-						<td class="px-4 py-3 text-sm">3</td>
-						<td class="px-4 py-3 text-sm">07/06/2025</td>
-						<td class="px-4 py-3"><span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Ativa</span></td>
-					</tr>
-					<tr>
-						<td class="px-4 py-3 text-sm font-mono text-gray-500">fam-i9j0k1l2</td>
-						<td class="px-4 py-3 font-medium">Casa dos Santos</td>
-						<td class="px-4 py-3 text-sm">4</td>
-						<td class="px-4 py-3 text-sm">05/06/2025</td>
-						<td class="px-4 py-3"><span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Pendente</span></td>
-					</tr>
+					// AQUI ESTÁ A CORREÇÃO PRINCIPAL:
+					// Verificamos se a lista está vazia. len() funciona para slices nulos também.
+					if len(families) == 0 {
+						// Se estiver vazia, mostramos uma mensagem amigável
+						<tr>
+							<td colspan="5" class="px-4 py-6 text-center text-gray-500">
+								Nenhuma família cadastrada ainda.
+							</td>
+						</tr>
+					} else {
+						// Se não estiver vazia, iteramos e mostramos os dados
+						for _, family := range families {
+							<tr>
+								<td class="px-4 py-3 text-sm font-mono text-gray-500">{ fmt.Sprintf("fam-%d", family.IDFamilia) }</td>
+								// Limpeza: fmt.Sprintf desnecessário para strings
+								<td class="px-4 py-3 font-medium">{ family.NomeFamilia }</td>
+								<td class="px-4 py-3 text-sm">{ fmt.Sprintf("%d", family.TotalMembros) }</td>
+								<td class="px-4 py-3 text-sm">{ family.CreatedAt }</td>
+								<td class="px-4 py-3">
+									if family.Status.Valid && family.Status.Bool {
+										<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Ativa</span>
+									} else {
+										<span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Pendente</span>
+									}
+								</td>
+							</tr>
+						}
+					}
 				</tbody>
 			</table>
 		</div>
