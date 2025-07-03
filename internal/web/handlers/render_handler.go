@@ -52,6 +52,12 @@ func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request)
 	dashboard.Render(r.Context(), w)
 }
 
+func (h* RenderHandler) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
+	// Render the login page
+	loginPage := pages.LoginPage()
+	loginPage.Render(r.Context(), w)
+}
+
 func (h *RenderHandler) FamiliesTableHTMXHandler(w http.ResponseWriter, r *http.Request) {
 	h.logger.Println("Handling HTMX request for families table")
 	families, err := h.db.ListRecentFamilies(r.Context())

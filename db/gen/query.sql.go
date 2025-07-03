@@ -69,6 +69,28 @@ func (q *Queries) CreateFamily(ctx context.Context, arg CreateFamilyParams) erro
 	return err
 }
 
+const createUser = `-- name: CreateUser :exec
+INSERT INTO users (id, name, email, password_hash)
+VALUES (?, ?, ?, ?)
+`
+
+type CreateUserParams struct {
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+	PasswordHash string `json:"password_hash"`
+}
+
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
+	_, err := q.db.ExecContext(ctx, createUser,
+		arg.ID,
+		arg.Name,
+		arg.Email,
+		arg.PasswordHash,
+	)
+	return err
+}
+
 const dashboardPage = `-- name: DashboardPage :many
 SELECT 
     f.id as id_familia, 

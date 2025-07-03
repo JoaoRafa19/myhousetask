@@ -14,6 +14,7 @@ type Querier interface {
 	CountTasksPending(ctx context.Context) (int64, error)
 	CountUsers(ctx context.Context) (int64, error)
 	CreateFamily(ctx context.Context, arg CreateFamilyParams) error
+	CreateUser(ctx context.Context, arg CreateUserParams) error
 	DashboardPage(ctx context.Context) ([]DashboardPageRow, error)
 	GetLastFiveFamilies(ctx context.Context) ([]Family, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)

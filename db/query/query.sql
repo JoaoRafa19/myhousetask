@@ -60,3 +60,8 @@ WHERE
     completed_at >= CURDATE() - INTERVAL 7 DAY
 GROUP BY completion_date
 ORDER BY completion_date DESC;
+
+
+-- name: CreateUser :exec
+INSERT INTO users (id, name, email, password_hash)
+VALUES (?, ?, ?, ?);

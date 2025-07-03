@@ -1,0 +1,85 @@
+package pages
+
+import "JoaoRafa19/myhousetask/internal/web/view/layout"
+
+
+templ loginContent() {
+	<div class="min-h-screen flex items-center justify-center bg-gray-100">
+		<div
+			id="auth-container"
+			class="relative w-full max-w-4xl h-[600px] bg-white rounded-2xl shadow-2xl overflow-hidden"
+			x-data="{ isLogin: true }"
+		>
+			<!-- Formulário de Login (Fixo na Esquerda) -->
+			<div class="absolute top-0 left-0 w-1/2 h-full p-12 flex items-center justify-center">
+				@loginForm()
+			</div>
+
+			<!-- Formulário de Cadastro (Fixo na Direita) -->
+			<div class="absolute top-0 left-1/2 w-1/2 h-full p-12 flex items-center justify-center">
+				@registerForm()
+			</div>
+
+			<div
+				id="overlay-panel"
+				class="absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-indigo-600 to-blue-500 text-white
+				       flex items-center justify-center
+					   transition-transform duration-700 ease-in-out z-10"
+				:class="isLogin ? 'translate-x-full' : 'translate-x-0'"
+			>
+				<!-- Conteúdo do Overlay -->
+				<div class="relative w-full h-full">
+					<!-- Este conteúdo é para quando o overlay está SOBRE O FORMULÁRIO DE LOGIN -->
+					<div
+						class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center p-8 text-center transition-opacity duration-300"
+						:class="{ 'opacity-100': !isLogin, 'opacity-0 pointer-events-none': isLogin }"
+					>
+						<h2 class="text-3xl font-bold mb-4">Crie sua conta</h2>
+						<p class="mb-8">Insira seus dados e comece a organizar sua casa hoje mesmo!</p>
+						<button @click="isLogin = true" class="px-8 py-3 bg-transparent border-2 border-white rounded-full font-semibold uppercase tracking-wider hover:bg-white hover:text-indigo-600 transition-colors">
+							Ja tenho uma conta
+						</button>
+					</div>
+
+					<div
+						class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-center p-8 text-center transition-opacity duration-300"
+						:class="{ 'opacity-100': isLogin, 'opacity-0 pointer-events-none': !isLogin }"
+					>
+						<h2 class="text-3xl font-bold mb-4">Bem-vindo de volta!</h2>
+						<p class="mb-8">Para manter-se conectado, por favor, faça o login com suas informações.</p>
+						<button @click="isLogin = false" class="px-8 py-3 bg-transparent border-2 border-white rounded-full font-semibold uppercase tracking-wider hover:bg-white hover:text-indigo-600 transition-colors">
+							Cadastrar
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+}
+
+
+templ loginForm() {
+	<form action="/api/login" method="POST" class="flex flex-col items-center w-full">
+		<h2 class="text-4xl font-bold text-gray-800 mb-8">Entrar</h2>
+		<input type="email" name="email" placeholder="Email" class="w-full bg-gray-100 p-4 mb-4 rounded-lg border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none"/>
+		<input type="password" name="password" placeholder="Senha" class="w-full bg-gray-100 p-4 mb-4 rounded-lg border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none"/>
+		<a href="#" class="text-sm text-gray-500 mb-8 hover:text-indigo-600">Esqueceu a senha?</a>
+		<button type="submit" class="w-1/2 px-8 py-3 bg-indigo-600 text-white rounded-full font-semibold uppercase tracking-wider hover:bg-indigo-700 transition-colors">Entrar</button>
+	</form>
+}
+
+templ registerForm() {
+	<form action="/api/register" method="POST" class="flex flex-col items-center w-full">
+		<h2 class="text-4xl font-bold text-gray-800 mb-8">Cadastrar</h2>
+		<input type="text" name="name" placeholder="Nome" class="w-full bg-gray-100 p-4 mb-4 rounded-lg border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none"/>
+		<input type="email" name="email" placeholder="Email" class="w-full bg-gray-100 p-4 mb-4 rounded-lg border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none"/>
+		<input type="password" name="password" placeholder="Senha" class="w-full bg-gray-100 p-4 mb-4 rounded-lg border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none"/>
+		<input type="password" name="confirmPassword" placeholder="Confirme a Senha" class="w-full bg-gray-100 p-4 mb-4 rounded-lg border-2 border-transparent focus:bg-white focus:border-indigo-500 outline-none"/>
+		<button type="submit" class="w-1/2 px-8 py-3 bg-indigo-600 text-white rounded-full font-semibold uppercase tracking-wider hover:bg-indigo-700 transition-colors">Cadastrar</button>
+	</form>
+}
+
+// Layout específico para a página de autenticação, sem sidebar.
+templ LoginPage() {
+	@layout.AuthLayout("Login", loginContent())
+}
