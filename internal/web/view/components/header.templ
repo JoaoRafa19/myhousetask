@@ -1,22 +1,25 @@
 package components
 
 templ Header(title string) {
-	<header class="bg-white shadow-sm p-4 flex justify-between items-center">
-		<button @click="sidebarOpen = !sidebarOpen" class="text-gray-500 focus:outline-none lg:hidden">
-			<svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)">
-				<path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-			</svg>
-		</button>
-		<h1 class="text-xl font-semibold text-gray-700">{ title }</h1>
-		<div x-data="{ dropdownOpen: false }" class="relative">
-			<button @click="dropdownOpen = !dropdownOpen" class="flex items-center space-x-2">
-				<img class="h-9 w-9 rounded-full object-cover" src="https://placehold.co/100x100/E2E8F0/4A5568?text=A" alt="Avatar do administrador"/>
-				<span class="hidden md:block font-medium">Admin User</span>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 text-gray-500"><path d="m6 9 6 6 6-6"></path></svg>
+	<header class="bg-white p-4 shadow-md flex justify-between items-center">
+		<h1 class="text-2xl font-bold">{ title }</h1>
+		// Dropdown do Utilizador (Exemplo usando Alpine.js)
+		<div x-data="{ open: false }" class="relative">
+			<button @click="open = !open" class="flex items-center gap-2">
+				<span class="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center font-bold">A</span>
+				<span>Admin User</span>
 			</button>
-			<div x-show="dropdownOpen" @click.away="dropdownOpen = false" class="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20" x-cloak>
-				<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Perfil</a>
-				<a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Sair</a>
+			<div
+				x-show="open"
+				@click.away="open = false"
+				x-transition
+				class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20"
+			>
+				<a href="/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Meu Perfil</a>
+				<a href="/settings" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Configurações</a>
+				<div class="border-t border-gray-100"></div>
+				
+				<a href="/logout" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Sair</a>
 			</div>
 		</div>
 	</header>

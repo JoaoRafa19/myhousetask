@@ -51,7 +51,8 @@ func main() {
 		protectedRouter.Use(middleware.AuthRequired)
 
 		protectedRouter.Get("/", render.DashboardHandler)
-		// (Adicione outras páginas aqui, ex: /families, /users)
+
+		protectedRouter.Get("/logout", api.LogoutUserHandler)
 
 		protectedRouter.Route("/htmx", func(htmxRouter chi.Router) {
 			htmxRouter.Get("/families-table", render.FamiliesTableHTMXHandler)

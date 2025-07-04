@@ -2,6 +2,7 @@ package handlers
 
 import (
 	db "JoaoRafa19/myhousetask/db/gen"
+	"JoaoRafa19/myhousetask/internal/core/services"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -166,7 +167,7 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	// 4. LOGIN BEM-SUCEDIDO! Criar uma sessão.
 	// Por agora, vamos criar um cookie simples. No futuro, use uma biblioteca de sessão.
 	sessionCookie := http.Cookie{
-		Name:     "myhousetask_session",
+		Name:     services.Auth_cookie,
 		Value:    user.ID, // Armazena o ID do usuário como valor do cookie
 		Path:     "/",
 		MaxAge:   3600 * 24,                      // 24 horas
@@ -177,6 +178,21 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &sessionCookie)
 
-	// 5. Redirecionar para o dashboard
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h *ApiHandler) LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	sessionCookie := http.Cookie{
+		Name:     services.Auth_cookie,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	http.SetCookie(w, &sessionCookie)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }
