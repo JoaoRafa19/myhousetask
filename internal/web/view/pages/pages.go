@@ -10,5 +10,3 @@ import (
 func FamiliesTableComponent(families []db.ListRecentFamiliesRow) templ.Component {
 	return components.FamiliesTable(families)
 }
-
-

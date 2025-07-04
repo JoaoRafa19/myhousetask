@@ -2,10 +2,10 @@
     "name": "myhousetask",
     "version": "1.0.0",
     "scripts": {
-      "css:build": "tailwindcss -i ./internal/web/view/input.css -o ./web/static/css/styles.css",
-      "css:watch": "tailwindcss -i ./internal/web/view/input.css -o ./web/static/css/styles.css --watch"
+        "css:build": "tailwindcss -i ./internal/web/view/input.css -o ./web/static/css/styles.css",
+        "css:watch": "tailwindcss -i ./internal/web/view/input.css -o ./web/static/css/styles.css --watch"
     },
     "devDependencies": {
-      "tailwindcss": "^3.4.4"
+        "tailwindcss": "^3.4.17"
     }
-  }
+}

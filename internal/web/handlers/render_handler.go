@@ -5,19 +5,21 @@ import (
 	"JoaoRafa19/myhousetask/internal/core/services"
 	"JoaoRafa19/myhousetask/internal/web/view/components"
 	"JoaoRafa19/myhousetask/internal/web/view/pages"
+	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"
 )
 
 type RenderHandler struct {
-	db     *db.Queries
-	logger *log.Logger
+	db             *db.Queries
+	logger         *log.Logger
+	sessionManager *scs.SessionManager
 
 	dashboardService *services.DashboardService
 	statsCardService *services.StatsCardService
 }
 
-func NewRenderHandler(db *db.Queries) *RenderHandler {
+func NewRenderHandler(db *db.Queries, sm *scs.SessionManager) *RenderHandler {
 
 	dashboardService := services.NewDashboardService(db)
 	if dashboardService == nil {
@@ -32,6 +34,7 @@ func NewRenderHandler(db *db.Queries) *RenderHandler {
 		db:               db,
 		logger:           log.Default(),
 		dashboardService: dashboardService,
+		sessionManager:   sm,
 		statsCardService: statsCardService,
 	}
 }
@@ -52,7 +55,7 @@ func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request)
 	dashboard.Render(r.Context(), w)
 }
 
-func (h* RenderHandler) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
+func (h *RenderHandler) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	// Render the login page
 	loginPage := pages.LoginPage()
 	loginPage.Render(r.Context(), w)

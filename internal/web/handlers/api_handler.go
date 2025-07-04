@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"
 	"time"
@@ -16,12 +17,14 @@ import (
 type ApiHandler struct {
 	db     *db.Queries
 	logger *log.Logger
+	sm     *scs.SessionManager
 }
 
-func NewApiHandler(db *db.Queries) *ApiHandler {
+func NewApiHandler(db *db.Queries, sm *scs.SessionManager) *ApiHandler {
 	return &ApiHandler{
 		db:     db,
 		logger: log.Default(),
+		sm:     sm,
 	}
 }
 
@@ -164,6 +167,14 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 4. LOGIN BEM-SUCEDIDO! Criar uma sessão.
+	err = h.sm.RenewToken(r.Context())
+	if err != nil {
+		http.Error(w, "Erro ao renvar token", http.StatusInternalServerError)
+		return
+	}
+
+	h.sm.Put(r.Context(), "userID", user.ID)
+	
 	// Por agora, vamos criar um cookie simples. No futuro, use uma biblioteca de sessão.
 	sessionCookie := http.Cookie{
 		Name:     "myhousetask_session",

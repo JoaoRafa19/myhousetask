@@ -5,35 +5,45 @@ import (
 	"JoaoRafa19/myhousetask/internal/web/handlers"
 	"JoaoRafa19/myhousetask/internal/web/middleware" // Certifique-se de importar o seu middleware
 	m "JoaoRafa19/myhousetask/migrator"
+	"database/sql"
 	"fmt"
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
-
-	"github.com/go-chi/chi/v5"
-
+	"time"
 )
 
+var sessionManager *scs.SessionManager
+
 func main() {
-	mydb, err := m.Run()
+	myDb, err := m.Run()
 	if err != nil {
 		log.Fatalf("could not run migrations: %v", err)
 	}
-	defer mydb.Close()
+	defer func() {
+		if err := myDb.Close(); err != nil {
+			log.Fatalf("could not close db: %v", err)
+		}
+	}()
 
-	database := db.New(mydb)
-	render := handlers.NewRenderHandler(database)
-	api := handlers.NewApiHandler(database)
+	sessionManager = scs.New()
+	sessionManager = ConfigureSessionManager(myDb, sessionManager)
+
+	database := db.New(myDb)
+	render := handlers.NewRenderHandler(database, sessionManager)
+	api := handlers.NewApiHandler(database, sessionManager)
 
 	mux := chi.NewRouter()
 
-	// Servir arquivos estáticos (CSS, JS)
 	workDir, _ := filepath.Abs(".")
 	filesDir := http.Dir(filepath.Join(workDir, "web", "static"))
 	FileServer(mux, "/static", filesDir)
 
-
+	mux.Use(sessionManager.LoadAndSave)
 	mux.Get("/login", render.LoginPageHandler)
 
 	mux.Route("/api", func(apiRouter chi.Router) {
@@ -51,7 +61,6 @@ func main() {
 		protectedRouter.Use(middleware.AuthRequired)
 
 		protectedRouter.Get("/", render.DashboardHandler)
-		// (Adicione outras páginas aqui, ex: /families, /users)
 
 		protectedRouter.Route("/htmx", func(htmxRouter chi.Router) {
 			htmxRouter.Get("/families-table", render.FamiliesTableHTMXHandler)
@@ -81,4 +90,16 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
 		fs.ServeHTTP(w, r)
 	})
+}
+
+func ConfigureSessionManager(db *sql.DB, manager *scs.SessionManager) *scs.SessionManager {
+	manager.Store = mysqlstore.New(db)
+	manager.Lifetime = 24 * time.Hour
+	manager.Cookie.Name = "myhousetask_session"
+	manager.Cookie.HttpOnly = true
+	manager.Cookie.Persist = true
+	manager.Cookie.SameSite = http.SameSiteLaxMode
+	manager.Cookie.Secure = false
+
+	return manager
 }
