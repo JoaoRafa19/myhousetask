@@ -2,13 +2,15 @@ package handlers
 
 import (
 	db "JoaoRafa19/myhousetask/db/gen"
+	"JoaoRafa19/myhousetask/internal/core/services"
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/alexedwards/scs/v2"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -67,7 +69,11 @@ func (h *ApiHandler) WeeklyActivityHandler(w http.ResponseWriter, r *http.Reques
 	// Defina o cabeçalho ANTES de escrever o status ou o corpo
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	w.Write(data)
+	if _, err := w.Write(data); err != nil {
+		h.logger.Printf("Failed to write weekly activity data: %v", err)
+		http.Error(w, "Failed to write weekly activity data", http.StatusInternalServerError)
+		return
+	}
 }
 
 func (h *ApiHandler) CreateFamilyHandler(w http.ResponseWriter, r *http.Request) {
@@ -79,9 +85,18 @@ func (h *ApiHandler) CreateFamilyHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	err := h.db.CreateFamily(r.Context(), db.CreateFamilyParams{
+	// Get the currently logged-in user ID from session
+	userID := h.sm.GetString(r.Context(), "userID")
+	if userID == "" {
+		http.Error(w, "User not authenticated", http.StatusUnauthorized)
+		return
+	}
+
+	// Create the family with the current user as owner
+	result, err := h.db.CreateFamily(r.Context(), db.CreateFamilyParams{
 		Name:        family,
 		Description: sql.NullString{String: description, Valid: true},
+		OwnerID:     sql.NullString{String: userID, Valid: true},
 	})
 
 	if err != nil {
@@ -90,7 +105,29 @@ func (h *ApiHandler) CreateFamilyHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	h.logger.Printf("Family: %s, Description: %s", family, description)
+	// Get the inserted family ID
+	familyID, err := result.LastInsertId()
+	if err != nil {
+		h.logger.Printf("Failed to get family ID: %v", err)
+		http.Error(w, "Failed to get family ID", http.StatusInternalServerError)
+		return
+	}
+
+	// Add the creator as a family member with OWNER role
+	err = h.db.CreateFamilyMember(r.Context(), db.CreateFamilyMemberParams{
+		ID:       uuid.New().String(),
+		FamilyID: sql.NullInt32{Int32: int32(familyID), Valid: true},
+		UserID:   sql.NullString{String: userID, Valid: true},
+		Role:     sql.NullString{String: "OWNER", Valid: true},
+	})
+
+	if err != nil {
+		h.logger.Printf("Failed to add user as family owner: %v", err)
+		http.Error(w, "Failed to add user as family owner", http.StatusInternalServerError)
+		return
+	}
+
+	h.logger.Printf("Family created: %s (ID: %d), Description: %s, Owner: %s", family, familyID, description, userID)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -159,6 +196,7 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 3. Comparar a senha fornecida com o hash armazenado
 	err = bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(password))
+
 	if err != nil {
 		// Senha incorreta - bcrypt.ErrMismatchedHashAndPassword
 		log.Println("Tentativa de login falhou (senha incorreta):", email)
@@ -169,15 +207,15 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	// 4. LOGIN BEM-SUCEDIDO! Criar uma sessão.
 	err = h.sm.RenewToken(r.Context())
 	if err != nil {
-		http.Error(w, "Erro ao renvar token", http.StatusInternalServerError)
+		http.Error(w, "Erro ao renovar token", http.StatusInternalServerError)
 		return
 	}
 
 	h.sm.Put(r.Context(), "userID", user.ID)
-	
+
 	// Por agora, vamos criar um cookie simples. No futuro, use uma biblioteca de sessão.
 	sessionCookie := http.Cookie{
-		Name:     "myhousetask_session",
+		Name:     services.Auth_cookie,
 		Value:    user.ID, // Armazena o ID do usuário como valor do cookie
 		Path:     "/",
 		MaxAge:   3600 * 24,                      // 24 horas
@@ -188,6 +226,27 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, &sessionCookie)
 
-	// 5. Redirecionar para o dashboard
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (h *ApiHandler) LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
+
+	err := h.sm.Destroy(r.Context())
+	if err != nil {
+		http.Error(w, "Erro ao logout", http.StatusInternalServerError)
+		return
+	}
+
+	sessionCookie := http.Cookie{
+		Name:     services.Auth_cookie,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		Secure:   false,
+		SameSite: http.SameSiteLaxMode,
+	}
+
+	http.SetCookie(w, &sessionCookie)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

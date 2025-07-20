@@ -19,15 +19,15 @@ message CreateUserResponse {
 
 message UpdateUserRequest {
     string id = 1;
-    string name = 2;
-    string email = 3;
+    optional string name = 2;
+    optional string email = 3;
 }
 message UpdateUserResponse {
     string id = 1;
     string name = 2;
     string email = 3;
 }
-message DeleteUserRequest { 
+message DeleteUserRequest {
     string id = 1;
 }
 message DeleteUserResponse {

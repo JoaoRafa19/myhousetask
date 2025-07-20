@@ -3,10 +3,12 @@ package services
 import (
 	db "JoaoRafa19/myhousetask/db/gen"
 	"context"
+	"database/sql"
 	"fmt"
 )
 
 type DashboardData struct {
+	UserName                 string
 	TotalFamilies            int64
 	TotalUsers               int64
 	TotalTasksCompletedToday int64
@@ -30,35 +32,51 @@ func (s *DashboardService) GetWeeklyActivity() ([]db.GetWeeklyTaskCompletionStat
 	return wekelyActivity, nil
 }
 
-func (s *DashboardService) GetDashboardData() (DashboardData, error) {
-	totalFamilies, err := s.db.CountFamilies(context.Background())
-	if err != nil {
-		return DashboardData{}, err
+func (s *DashboardService) GetDashboardData(userId string) (*DashboardData, error) {
+
+	if userId == "" {
+		return nil, fmt.Errorf("invalid user id ")
 	}
 
-	totalUsers, err := s.db.CountUsers(context.Background())
+	user, err := s.db.GetUserByID(context.Background(), userId)
 	if err != nil {
-		return DashboardData{}, err
+		return nil, err
 	}
 
-	totalTasksCompletedToday, err := s.db.CountTasksCompletedToday(context.Background())
+	userid := sql.NullString{
+		String: userId,
+		Valid:  true,
+	}
+
+	totalFamilies, err := s.db.CountFamilies(context.Background(), userid)
 	if err != nil {
-		return DashboardData{}, err
+		return nil, err
+	}
+
+	totalUsers, err := s.db.CountUsersFamilyMembers(context.Background(), userid)
+	if err != nil {
+		return nil, err
+	}
+
+	totalTasksCompletedToday, err := s.db.CountTasksCompletedToday(context.Background(), userid)
+	if err != nil {
+		return nil, err
 	}
 
 	totalTasksPending, err := s.db.CountTasksPending(context.Background())
 	if err != nil {
-		return DashboardData{}, err
+		return nil, err
 	}
 
 	recentFamilies, err := s.db.ListRecentFamilies(context.Background())
 	if err != nil {
-		return DashboardData{}, err
+		return nil, err
 	}
 
 	fmt.Println(totalFamilies, totalUsers, totalTasksCompletedToday, totalTasksPending, recentFamilies)
 
-	return DashboardData{
+	return &DashboardData{
+		UserName:                 user.Name,
 		TotalFamilies:            totalFamilies,
 		TotalUsers:               totalUsers,
 		TotalTasksCompletedToday: totalTasksCompletedToday,

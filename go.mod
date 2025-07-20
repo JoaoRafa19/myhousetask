@@ -7,6 +7,8 @@ toolchain go1.24.4
 require (
 	github.com/a-h/templ v0.3.898
 	github.com/air-verse/air v1.62.0
+	github.com/alexedwards/scs/mysqlstore v0.0.0-20250417082927-ab20b3feb5e9
+	github.com/alexedwards/scs/v2 v2.8.0
 	github.com/go-sql-driver/mysql v1.9.2
 	github.com/golang-migrate/migrate/v4 v4.18.3
 	github.com/joho/godotenv v1.5.1
@@ -14,11 +16,6 @@ require (
 	google.golang.org/grpc v1.73.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.36.6
-)
-
-require (
-	github.com/alexedwards/scs/mysqlstore v0.0.0-20250417082927-ab20b3feb5e9 // indirect
-	github.com/alexedwards/scs/v2 v2.8.0 // indirect
 )
 
 require (

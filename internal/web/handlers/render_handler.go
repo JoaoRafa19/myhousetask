@@ -41,7 +41,9 @@ func NewRenderHandler(db *db.Queries, sm *scs.SessionManager) *RenderHandler {
 
 func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
-	data, err := h.dashboardService.GetDashboardData()
+	userID := h.sessionManager.GetString(r.Context(), "userID")
+	h.logger.Println("Utilizando usuario", userID)
+	data, err := h.dashboardService.GetDashboardData(userID)
 	if err != nil {
 		log.Printf("Error getting dashboard data: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -50,7 +52,7 @@ func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request)
 
 	log.Println(data)
 
-	dashboard := pages.DashboardPage(&data)
+	dashboard := pages.DashboardPage(data)
 
 	dashboard.Render(r.Context(), w)
 }
@@ -76,14 +78,20 @@ func (h *RenderHandler) FamiliesTableHTMXHandler(w http.ResponseWriter, r *http.
 
 func (h *RenderHandler) HTMXStatusCard(w http.ResponseWriter, r *http.Request) {
 
-	data, err := h.statsCardService.GetStatsCardData(r.Context())
+	userID := h.sessionManager.GetString(r.Context(), "userID")
+	if userID == "" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	data, err := h.statsCardService.GetStatsCardData(r.Context(), userID)
 
 	if err != nil {
 		log.Printf("Error getting stats card data: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
-	statsCard := components.StatsCards(&data)
+	statsCard := components.StatsCards(data)
 	statsCard.Render(r.Context(), w)
 
 }

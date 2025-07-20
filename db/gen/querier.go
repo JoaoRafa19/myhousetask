@@ -6,19 +6,22 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
-	CountFamilies(ctx context.Context) (int64, error)
-	CountTasksCompletedToday(ctx context.Context) (int64, error)
+	CountFamilies(ctx context.Context, userID sql.NullString) (int64, error)
+	CountTasksCompletedToday(ctx context.Context, userID sql.NullString) (int64, error)
 	CountTasksPending(ctx context.Context) (int64, error)
-	CountUsers(ctx context.Context) (int64, error)
-	CreateFamily(ctx context.Context, arg CreateFamilyParams) error
+	CountUsersFamilyMembers(ctx context.Context, userID sql.NullString) (int64, error)
+	CreateFamily(ctx context.Context, arg CreateFamilyParams) (sql.Result, error)
+	CreateFamilyMember(ctx context.Context, arg CreateFamilyMemberParams) error
 	CreateUser(ctx context.Context, arg CreateUserParams) error
-	DashboardPage(ctx context.Context) ([]DashboardPageRow, error)
-	GetLastFiveFamilies(ctx context.Context) ([]Family, error)
+	DashboardPage(ctx context.Context, userID sql.NullString) ([]DashboardPageRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserByID(ctx context.Context, id string) (User, error)
 	GetWeeklyTaskCompletionStats(ctx context.Context) ([]GetWeeklyTaskCompletionStatsRow, error)
+	ListFamiliesForUser(ctx context.Context, userID sql.NullString) ([]Family, error)
 	ListRecentFamilies(ctx context.Context) ([]ListRecentFamiliesRow, error)
 }
 

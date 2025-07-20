@@ -12,22 +12,30 @@ import (
 )
 
 const countFamilies = `-- name: CountFamilies :one
-SELECT count(*) FROM families
+SELECT count(*)
+FROM family_members fm
+WHERE fm.user_id = ?
 `
 
-func (q *Queries) CountFamilies(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countFamilies)
+func (q *Queries) CountFamilies(ctx context.Context, userID sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countFamilies, userID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
 const countTasksCompletedToday = `-- name: CountTasksCompletedToday :one
-SELECT count(*) FROM tasks WHERE status = 'completed' AND DATE(completed_at) = CURDATE()
+SELECT count(*)
+FROM tasks t
+         JOIN family_members fm ON t.family_id = fm.family_id
+WHERE
+    fm.user_id = ? AND
+    t.status = 'completed' AND
+    DATE(t.completed_at) = CURDATE()
 `
 
-func (q *Queries) CountTasksCompletedToday(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countTasksCompletedToday)
+func (q *Queries) CountTasksCompletedToday(ctx context.Context, userID sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countTasksCompletedToday, userID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -44,28 +52,53 @@ func (q *Queries) CountTasksPending(ctx context.Context) (int64, error) {
 	return count, err
 }
 
-const countUsers = `-- name: CountUsers :one
-SELECT count(*) FROM users
+const countUsersFamilyMembers = `-- name: CountUsersFamilyMembers :one
+SELECT COUNT(DISTINCT fm2.user_id)
+FROM family_members AS fm1
+         JOIN family_members AS fm2 ON fm1.family_id = fm2.family_id
+WHERE fm1.user_id = ?
 `
 
-func (q *Queries) CountUsers(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, countUsers)
+func (q *Queries) CountUsersFamilyMembers(ctx context.Context, userID sql.NullString) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countUsersFamilyMembers, userID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const createFamily = `-- name: CreateFamily :exec
-INSERT INTO families (name, description) VALUES (?, ?)
+const createFamily = `-- name: CreateFamily :execresult
+INSERT INTO families (name, description, owner_id) VALUES (?, ?, ?)
 `
 
 type CreateFamilyParams struct {
 	Name        string         `json:"name"`
 	Description sql.NullString `json:"description"`
+	OwnerID     sql.NullString `json:"owner_id"`
 }
 
-func (q *Queries) CreateFamily(ctx context.Context, arg CreateFamilyParams) error {
-	_, err := q.db.ExecContext(ctx, createFamily, arg.Name, arg.Description)
+func (q *Queries) CreateFamily(ctx context.Context, arg CreateFamilyParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createFamily, arg.Name, arg.Description, arg.OwnerID)
+}
+
+const createFamilyMember = `-- name: CreateFamilyMember :exec
+INSERT INTO family_members (id, family_id, user_id, role)
+VALUES (?, ?, ?, ?)
+`
+
+type CreateFamilyMemberParams struct {
+	ID       string         `json:"id"`
+	FamilyID sql.NullInt32  `json:"family_id"`
+	UserID   sql.NullString `json:"user_id"`
+	Role     sql.NullString `json:"role"`
+}
+
+func (q *Queries) CreateFamilyMember(ctx context.Context, arg CreateFamilyMemberParams) error {
+	_, err := q.db.ExecContext(ctx, createFamilyMember,
+		arg.ID,
+		arg.FamilyID,
+		arg.UserID,
+		arg.Role,
+	)
 	return err
 }
 
@@ -92,16 +125,16 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 }
 
 const dashboardPage = `-- name: DashboardPage :many
-SELECT 
-    f.id as id_familia, 
-    f.name as nome_familia, 
-    DATE_FORMAT(f.created_at, '%Y-%m-%d %H:%i:%s') as created_at, 
+SELECT
+    f.id as id_familia,
+    f.name as nome_familia,
+    DATE_FORMAT(f.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
     f.is_active as status,
-    COUNT(fm.id) as total_membros
-from families f 
-LEFT JOIN family_members fm on fm.family_id = f.id 
-LEFT JOIN users u on fm.user_id = u.id
-GROUP BY f.id, f.name, f.created_at, f.is_active
+    (SELECT COUNT(*) FROM family_members WHERE family_id = f.id) as total_membros
+FROM families f
+WHERE f.id IN (
+    SELECT family_id FROM family_members fm WHERE fm.user_id = ?
+)
 ORDER BY f.created_at DESC
 LIMIT 5
 `
@@ -114,8 +147,8 @@ type DashboardPageRow struct {
 	TotalMembros int64        `json:"total_membros"`
 }
 
-func (q *Queries) DashboardPage(ctx context.Context) ([]DashboardPageRow, error) {
-	rows, err := q.db.QueryContext(ctx, dashboardPage)
+func (q *Queries) DashboardPage(ctx context.Context, userID sql.NullString) ([]DashboardPageRow, error) {
+	rows, err := q.db.QueryContext(ctx, dashboardPage, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -129,39 +162,6 @@ func (q *Queries) DashboardPage(ctx context.Context) ([]DashboardPageRow, error)
 			&i.CreatedAt,
 			&i.Status,
 			&i.TotalMembros,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getLastFiveFamilies = `-- name: GetLastFiveFamilies :many
-SELECT id, name, created_at, is_active, description FROM families ORDER BY created_at DESC LIMIT 5
-`
-
-func (q *Queries) GetLastFiveFamilies(ctx context.Context) ([]Family, error) {
-	rows, err := q.db.QueryContext(ctx, getLastFiveFamilies)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Family
-	for rows.Next() {
-		var i Family
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.CreatedAt,
-			&i.IsActive,
-			&i.Description,
 		); err != nil {
 			return nil, err
 		}
@@ -193,13 +193,30 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	return i, err
 }
 
+const getUserByID = `-- name: GetUserByID :one
+    select id, name, email, password_hash, created_at from users where id = ?
+`
+
+func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByID, id)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.PasswordHash,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getWeeklyTaskCompletionStats = `-- name: GetWeeklyTaskCompletionStats :many
-SELECT 
+SELECT
     DATE(completed_at) as completion_date,
     COUNT(*) as completed_count
 FROM tasks
-WHERE 
-    status = 'completed' AND 
+WHERE
+    status = 'completed' AND
     completed_at >= CURDATE() - INTERVAL 7 DAY
 GROUP BY completion_date
 ORDER BY completion_date DESC
@@ -233,15 +250,53 @@ func (q *Queries) GetWeeklyTaskCompletionStats(ctx context.Context) ([]GetWeekly
 	return items, nil
 }
 
+const listFamiliesForUser = `-- name: ListFamiliesForUser :many
+SELECT f.id, f.name, f.created_at, f.is_active, f.description, f.owner_id
+FROM families f
+         JOIN family_members fm ON f.id = fm.family_id
+WHERE fm.user_id = ?
+ORDER BY f.created_at DESC
+`
+
+func (q *Queries) ListFamiliesForUser(ctx context.Context, userID sql.NullString) ([]Family, error) {
+	rows, err := q.db.QueryContext(ctx, listFamiliesForUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Family
+	for rows.Next() {
+		var i Family
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CreatedAt,
+			&i.IsActive,
+			&i.Description,
+			&i.OwnerID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRecentFamilies = `-- name: ListRecentFamilies :many
-SELECT 
-    f.id as id_familia, 
-    f.name as nome_familia, 
-    DATE_FORMAT(f.created_at, '%Y-%m-%d %H:%i:%s') as created_at, 
+SELECT
+    f.id as id_familia,
+    f.name as nome_familia,
+    DATE_FORMAT(f.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
     f.is_active as status,
     COUNT(fm.id) as total_membros
-from families f 
-LEFT JOIN family_members fm on fm.family_id = f.id 
+from families f
+LEFT JOIN family_members fm on fm.family_id = f.id
 LEFT JOIN users u on fm.user_id = u.id
 GROUP BY f.id, f.name, f.created_at, f.is_active
 ORDER BY f.created_at DESC

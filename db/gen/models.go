@@ -35,6 +35,7 @@ type Family struct {
 	CreatedAt   sql.NullTime   `json:"created_at"`
 	IsActive    sql.NullBool   `json:"is_active"`
 	Description sql.NullString `json:"description"`
+	OwnerID     sql.NullString `json:"owner_id"`
 }
 
 type FamilyInvite struct {
@@ -51,6 +52,12 @@ type FamilyMember struct {
 	UserID   sql.NullString `json:"user_id"`
 	Role     sql.NullString `json:"role"`
 	JoinedAt sql.NullTime   `json:"joined_at"`
+}
+
+type Session struct {
+	Token  string    `json:"token"`
+	Data   []byte    `json:"data"`
+	Expiry time.Time `json:"expiry"`
 }
 
 type Task struct {

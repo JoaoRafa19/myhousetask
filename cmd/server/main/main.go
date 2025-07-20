@@ -39,11 +39,12 @@ func main() {
 
 	mux := chi.NewRouter()
 
+	mux.Use(sessionManager.LoadAndSave)
+	// Servir arquivos estáticos (CSS, JS)
 	workDir, _ := filepath.Abs(".")
 	filesDir := http.Dir(filepath.Join(workDir, "web", "static"))
 	FileServer(mux, "/static", filesDir)
 
-	mux.Use(sessionManager.LoadAndSave)
 	mux.Get("/login", render.LoginPageHandler)
 
 	mux.Route("/api", func(apiRouter chi.Router) {
@@ -51,16 +52,18 @@ func main() {
 		apiRouter.Post("/login", api.LoginUserHandler)
 
 		apiRouter.Group(func(protectedApiRouter chi.Router) {
-			protectedApiRouter.Use(middleware.AuthRequired)
+			protectedApiRouter.Use(middleware.AuthRequired(sessionManager))
 			protectedApiRouter.Get("/charts/weekly-activity", api.WeeklyActivityHandler)
 			protectedApiRouter.Post("/create-family", api.CreateFamilyHandler)
 		})
 	})
 
 	mux.Group(func(protectedRouter chi.Router) {
-		protectedRouter.Use(middleware.AuthRequired)
+		protectedRouter.Use(middleware.AuthRequired(sessionManager))
 
 		protectedRouter.Get("/", render.DashboardHandler)
+
+		protectedRouter.Get("/logout", api.LogoutUserHandler)
 
 		protectedRouter.Route("/htmx", func(htmxRouter chi.Router) {
 			htmxRouter.Get("/families-table", render.FamiliesTableHTMXHandler)
