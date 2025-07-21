@@ -204,27 +204,13 @@ func (h *ApiHandler) LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// 4. LOGIN BEM-SUCEDIDO! Criar uma sessão.
 	err = h.sm.RenewToken(r.Context())
 	if err != nil {
 		http.Error(w, "Erro ao renovar token", http.StatusInternalServerError)
 		return
 	}
 
-	h.sm.Put(r.Context(), "userID", user.ID)
-
-	// Por agora, vamos criar um cookie simples. No futuro, use uma biblioteca de sessão.
-	sessionCookie := http.Cookie{
-		Name:     services.Auth_cookie,
-		Value:    user.ID, // Armazena o ID do usuário como valor do cookie
-		Path:     "/",
-		MaxAge:   3600 * 24,                      // 24 horas
-		Expires:  time.Now().Add(24 * time.Hour), // Define a expiração do cookie
-		HttpOnly: true,                           // Impede acesso via JavaScript (essencial para segurança)
-		Secure:   false,                          // Em produção, deve ser true (requer HTTPS)
-		SameSite: http.SameSiteLaxMode,
-	}
-	http.SetCookie(w, &sessionCookie)
+	h.sm.Put(r.Context(), services.User_id, user.ID)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -237,16 +223,5 @@ func (h *ApiHandler) LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionCookie := http.Cookie{
-		Name:     services.Auth_cookie,
-		Value:    "",
-		Path:     "/",
-		MaxAge:   -1,
-		HttpOnly: true,
-		Secure:   false,
-		SameSite: http.SameSiteLaxMode,
-	}
-
-	http.SetCookie(w, &sessionCookie)
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

@@ -1,48 +1,44 @@
-// internal/web/view/pages/dashboard.templ
 package pages
 
 import (
-	"JoaoRafa19/myhousetask/internal/web/view/layout"
-	"JoaoRafa19/myhousetask/internal/web/view/components"
 	"JoaoRafa19/myhousetask/internal/core/services"
+	"JoaoRafa19/myhousetask/internal/web/view/components"
+	"JoaoRafa19/myhousetask/internal/web/view/layout"
 	"fmt"
 	"strings"
 )
 
 templ dashboardContent(data *services.DashboardData) {
-	@components.Sidebar()
-	<main class="flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64">
-		@components.Header( fmt.Sprintf("Bem-vindo, %s!", strings.Split(data.UserName, " ")[0]), data.UserName)
+	<main class="flex-1 flex flex-col transition-all duration-300 ease-in-out">
+		@components.Header(fmt.Sprintf("Bem-vindo, %s!", strings.Split(data.UserName, " ")[0]), data.UserName)
 		<div class="p-6 md:p-8 flex-1 overflow-y-auto">
-			<div id="stats-card"
+			<div
+				id="stats-card"
+				hx-get="/htmx/stats-card"
+				hx-trigger="load"
+				hx-swap="outerHTML"
+			>
+				<button
+					class="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
 					hx-get="/htmx/stats-card"
-					hx-trigger="load"
+					hx-target="#stats-card"
 					hx-swap="outerHTML"
+					hx-trigger="click"
 				>
-					<button
-						class="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition-colors"
-						hx-get="/htmx/stats-card"
-						hx-target="#stats-card"
-						hx-swap="outerHTML"
-						hx-trigger="click"
-					>
-						Recarregar Tabela de Familias
-					</button>
-					
-					// Opcional, mas recomendado: um placeholder de carregamento
-					<div class="mt-8 bg-white p-6 rounded-xl shadow-md text-center text-gray-500">
-						Carregando tabela de famílias...
-					</div>
+					Recarregar Tabela de Familias
+				</button>
+				// Opcional, mas recomendado: um placeholder de carregamento
+				<div class="mt-8 bg-white p-6 rounded-xl shadow-md text-center text-gray-500">
+					Carregando tabela de famílias...
 				</div>
+			</div>
 			<div class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
 				@components.ActivityChart()
 				@components.QuickActions()
 			</div>
-
 			<div class="mt-8">
-				
-				
-				<div id="families-table-container"
+				<div
+					id="families-table-container"
 					hx-get="/htmx/families-table"
 					hx-trigger="load"
 					hx-swap="outerHTML"
@@ -56,7 +52,6 @@ templ dashboardContent(data *services.DashboardData) {
 					>
 						Recarregar Tabela de Familias
 					</button>
-					
 					// Opcional, mas recomendado: um placeholder de carregamento
 					<div class="mt-8 bg-white p-6 rounded-xl shadow-md text-center text-gray-500">
 						Carregando tabela de famílias...
@@ -70,5 +65,5 @@ templ dashboardContent(data *services.DashboardData) {
 
 // O DashboardPage permanece igual
 templ DashboardPage(data *services.DashboardData) {
-	@layout.AppLayout("Dashboard", dashboardContent(data))
+	@layout.AppLayout("Dashboard", "dashboard", dashboardContent(data))
 }

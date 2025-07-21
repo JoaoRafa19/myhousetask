@@ -3,6 +3,7 @@ package handlers
 import (
 	db "JoaoRafa19/myhousetask/db/gen"
 	"JoaoRafa19/myhousetask/internal/core/services"
+	"JoaoRafa19/myhousetask/internal/web/middleware"
 	"JoaoRafa19/myhousetask/internal/web/view/components"
 	"JoaoRafa19/myhousetask/internal/web/view/pages"
 	"github.com/alexedwards/scs/v2"
@@ -17,6 +18,7 @@ type RenderHandler struct {
 
 	dashboardService *services.DashboardService
 	statsCardService *services.StatsCardService
+	familyService    *services.FamilyServices
 }
 
 func NewRenderHandler(db *db.Queries, sm *scs.SessionManager) *RenderHandler {
@@ -30,18 +32,24 @@ func NewRenderHandler(db *db.Queries, sm *scs.SessionManager) *RenderHandler {
 		log.Fatal("Failed to create StatsCardService")
 	}
 
+	familyService := services.NewFamilyServices(db)
+	if familyService == nil {
+		log.Fatal("Failed to create FamilyService")
+	}
+
 	return &RenderHandler{
 		db:               db,
 		logger:           log.Default(),
 		dashboardService: dashboardService,
 		sessionManager:   sm,
 		statsCardService: statsCardService,
+		familyService:    familyService,
 	}
 }
 
 func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
 
-	userID := h.sessionManager.GetString(r.Context(), "userID")
+	userID := middleware.GetUserIDFromContext(r.Context())
 	h.logger.Println("Utilizando usuario", userID)
 	data, err := h.dashboardService.GetDashboardData(userID)
 	if err != nil {
@@ -54,13 +62,19 @@ func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request)
 
 	dashboard := pages.DashboardPage(data)
 
-	dashboard.Render(r.Context(), w)
+	err = dashboard.Render(r.Context(), w)
+	if err != nil {
+		return
+	}
 }
 
 func (h *RenderHandler) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	// Render the login page
 	loginPage := pages.LoginPage()
-	loginPage.Render(r.Context(), w)
+	err := loginPage.Render(r.Context(), w)
+	if err != nil {
+		return
+	}
 }
 
 func (h *RenderHandler) FamiliesTableHTMXHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,7 +92,7 @@ func (h *RenderHandler) FamiliesTableHTMXHandler(w http.ResponseWriter, r *http.
 
 func (h *RenderHandler) HTMXStatusCard(w http.ResponseWriter, r *http.Request) {
 
-	userID := h.sessionManager.GetString(r.Context(), "userID")
+	userID := h.sessionManager.GetString(r.Context(), services.User_id)
 	if userID == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -94,4 +108,18 @@ func (h *RenderHandler) HTMXStatusCard(w http.ResponseWriter, r *http.Request) {
 	statsCard := components.StatsCards(data)
 	statsCard.Render(r.Context(), w)
 
+}
+
+func (h *RenderHandler) ShowFamiliesPage(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserIDFromContext(r.Context())
+
+	// Chame o serviço para buscar os dados.
+	families, err := h.familyService.GetFamiliesByUserID(r.Context(), userID)
+	if err != nil {
+		h.logger.Printf("Error fetching families for user %s: %v", userID, err)
+		http.Error(w, "Could not load families.", http.StatusInternalServerError)
+		return
+	}
+
+	pages.FamiliesPage(families).Render(r.Context(), w)
 }

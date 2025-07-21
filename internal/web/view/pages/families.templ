@@ -1,0 +1,65 @@
+package pages
+
+import (
+	gen "JoaoRafa19/myhousetask/db/gen"
+	"JoaoRafa19/myhousetask/internal/web/view/components"
+	"JoaoRafa19/myhousetask/internal/web/view/layout"
+	"fmt"
+)
+
+templ familiesContent(families []gen.Family) {
+	<main class="flex-1 flex flex-col transition-all duration-300 ease-in-out">
+		@components.Header("Minhas Famílias", "")
+		<div class="p-6 md:p-8 flex-1 overflow-y-auto">
+			<div class="flex justify-end mb-8">
+				<button
+					onclick="document.getElementById('createFamilyDialog').showModal();"
+					class="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition-colors"
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+					<span>Criar Nova Família</span>
+				</button>
+			</div>
+			if len(families) == 0 {
+				<div class="bg-white p-16 text-center rounded-lg shadow-md border">
+					<h3 class="text-xl font-semibold text-gray-700">Você ainda não faz parte de nenhuma família.</h3>
+					<p class="text-gray-500 mt-2">Crie uma nova para começar a organizar suas tarefas ou peça um convite a um amigo!</p>
+				</div>
+			} else {
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					for _, family := range families {
+						@familyCard(family)
+					}
+				</div>
+			}
+		</div>
+	</main>
+}
+
+templ familyCard(family gen.Family) {
+	<a href={ templ.URL(fmt.Sprintf("/families/%d", family.ID)) } class="block bg-white p-6 rounded-xl shadow-md border border-transparent hover:border-indigo-500 hover:shadow-lg transition-all duration-300">
+		<div class="flex justify-between items-start">
+			<h2 class="text-xl font-bold text-gray-800 truncate" title={ family.Name }>{ family.Name }</h2>
+			if family.IsActive.Valid && family.IsActive.Bool {
+				<span class="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-full">Ativa</span>
+			} else {
+				<span class="px-2 py-1 text-xs font-semibold text-yellow-800 bg-yellow-100 rounded-full">Pendente</span>
+			}
+		</div>
+		if family.Description.Valid && family.Description.String != "" {
+			<p class="text-gray-600 mt-2 h-12 overflow-hidden text-ellipsis">{ family.Description.String }</p>
+		} else {
+			<p class="text-gray-400 italic mt-2 h-12">Sem descrição.</p>
+		}
+		<div class="mt-4 border-t pt-4 flex justify-between text-sm text-gray-500">
+			if family.CreatedAt.Valid {
+				<span>Criada em: { family.CreatedAt.Time.Format("02/01/2006") }</span>
+			}
+			<span><strong>?</strong> Membros</span>
+		</div>
+	</a>
+}
+
+templ FamiliesPage(families []gen.Family) {
+	@layout.AppLayout("Minhas Famílias", "families", familiesContent(families))
+}

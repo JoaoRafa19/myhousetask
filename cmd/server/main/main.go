@@ -2,19 +2,21 @@ package main
 
 import (
 	db "JoaoRafa19/myhousetask/db/gen"
+	"JoaoRafa19/myhousetask/internal/core/services"
 	"JoaoRafa19/myhousetask/internal/web/handlers"
 	"JoaoRafa19/myhousetask/internal/web/middleware" // Certifique-se de importar o seu middleware
 	m "JoaoRafa19/myhousetask/migrator"
 	"database/sql"
 	"fmt"
-	"github.com/alexedwards/scs/mysqlstore"
-	"github.com/alexedwards/scs/v2"
-	"github.com/go-chi/chi/v5"
 	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/alexedwards/scs/mysqlstore"
+	"github.com/alexedwards/scs/v2"
+	"github.com/go-chi/chi/v5"
 )
 
 var sessionManager *scs.SessionManager
@@ -62,10 +64,11 @@ func main() {
 		protectedRouter.Use(middleware.AuthRequired(sessionManager))
 
 		protectedRouter.Get("/", render.DashboardHandler)
-
 		protectedRouter.Get("/logout", api.LogoutUserHandler)
+		protectedRouter.Get("/families", render.ShowFamiliesPage)
 
 		protectedRouter.Route("/htmx", func(htmxRouter chi.Router) {
+
 			htmxRouter.Get("/families-table", render.FamiliesTableHTMXHandler)
 			htmxRouter.Get("/stats-card", render.HTMXStatusCard)
 		})
@@ -85,7 +88,7 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 	fs := http.StripPrefix(path, http.FileServer(root))
 
 	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		r.Get(path, http.RedirectHandler(path+"/", http.StatusMovedPermanently).ServeHTTP)
 		path += "/"
 	}
 	path += "*"
@@ -98,7 +101,7 @@ func FileServer(r chi.Router, path string, root http.FileSystem) {
 func ConfigureSessionManager(db *sql.DB, manager *scs.SessionManager) *scs.SessionManager {
 	manager.Store = mysqlstore.New(db)
 	manager.Lifetime = 24 * time.Hour
-	manager.Cookie.Name = "myhousetask_session"
+	manager.Cookie.Name = services.User_id
 	manager.Cookie.HttpOnly = true
 	manager.Cookie.Persist = true
 	manager.Cookie.SameSite = http.SameSiteLaxMode

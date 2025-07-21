@@ -1,6 +1,8 @@
 package layout
 
-templ AppLayout(title string, children templ.Component) {
+import "JoaoRafa19/myhousetask/internal/web/view/components"
+
+templ AppLayout(title string, activePage string, children templ.Component) {
 	<!DOCTYPE html>
 	<html lang="pt-BR">
 		<head>
@@ -26,7 +28,10 @@ templ AppLayout(title string, children templ.Component) {
 		</head>
 		<body class="bg-gray-50 text-gray-800">
 			<div x-data="{ sidebarOpen: false }" class="flex h-screen">
-				@children
+				@components.Sidebar(activePage)
+				<main class="flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64">
+					@children
+				</main>
 			</div>
 			<script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.6/dist/htmx.min.js" integrity="sha384-Akqfrbj/HpNVo8k11SXBb6TlBWmXXlYQrCSqEWmyKJe+hDm3Z/B2WVG4smwBkRVm" crossorigin="anonymous"></script>
 			<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
