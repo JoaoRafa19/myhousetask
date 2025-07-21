@@ -16,9 +16,34 @@ func NewFamilyServices(db *gen.Queries) *FamilyServices {
 
 func (fs *FamilyServices) GetFamiliesByUserID(ctx context.Context, id string) ([]gen.Family, error) {
 
-	userId := sql.NullString{
-		String: id,
+	user, err := fs.db.GetUserByID(ctx, id)
+	if err != nil {
+		return nil, err
 	}
 
-	return fs.db.ListFamiliesForUser(ctx, userId)
+	userId := sql.NullString{
+		String: user.ID,
+		Valid:  true,
+	}
+
+	familiesForUserRow, err := fs.db.ListFamiliesForUser(ctx, userId)
+
+	if err != nil {
+		return []gen.Family{}, err
+	}
+
+	var fams []gen.Family
+
+	for _, fm := range familiesForUserRow {
+		fams = append(fams, gen.Family{
+			ID:          fm.ID,
+			CreatedAt:   fm.CreatedAt,
+			Description: fm.Description,
+			Name:        fm.Name,
+			OwnerID:     fm.OwnerID,
+			IsActive:    fm.IsActive,
+		})
+	}
+
+	return fams, nil
 }

@@ -21,7 +21,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id string) (User, error)
 	GetWeeklyTaskCompletionStats(ctx context.Context) ([]GetWeeklyTaskCompletionStatsRow, error)
-	ListFamiliesForUser(ctx context.Context, userID sql.NullString) ([]Family, error)
+	ListFamiliesForUser(ctx context.Context, userID sql.NullString) ([]ListFamiliesForUserRow, error)
 	ListRecentFamilies(ctx context.Context) ([]ListRecentFamiliesRow, error)
 }
 

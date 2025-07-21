@@ -6,11 +6,16 @@ SELECT * FROM users WHERE email = ?;
 INSERT INTO families (name, description, owner_id) VALUES (?, ?, ?);
 
 -- name: ListFamiliesForUser :many
-SELECT f.*
-FROM families f
-         JOIN family_members fm ON f.id = fm.family_id
-WHERE fm.user_id = ?
-ORDER BY f.created_at DESC;
+SELECT
+    f.id, f.name, f.description, f.is_active, f.created_at, f.owner_id
+FROM
+    families f
+        JOIN
+    family_members fm ON f.id = fm.family_id
+WHERE
+    fm.user_id = ?
+ORDER BY
+    f.created_at DESC;
 
 
 -- name: DashboardPage :many

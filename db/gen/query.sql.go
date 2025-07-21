@@ -251,28 +251,42 @@ func (q *Queries) GetWeeklyTaskCompletionStats(ctx context.Context) ([]GetWeekly
 }
 
 const listFamiliesForUser = `-- name: ListFamiliesForUser :many
-SELECT f.id, f.name, f.created_at, f.is_active, f.description, f.owner_id
-FROM families f
-         JOIN family_members fm ON f.id = fm.family_id
-WHERE fm.user_id = ?
-ORDER BY f.created_at DESC
+SELECT
+    f.id, f.name, f.description, f.is_active, f.created_at, f.owner_id
+FROM
+    families f
+        JOIN
+    family_members fm ON f.id = fm.family_id
+WHERE
+    fm.user_id = ?
+ORDER BY
+    f.created_at DESC
 `
 
-func (q *Queries) ListFamiliesForUser(ctx context.Context, userID sql.NullString) ([]Family, error) {
+type ListFamiliesForUserRow struct {
+	ID          int32          `json:"id"`
+	Name        string         `json:"name"`
+	Description sql.NullString `json:"description"`
+	IsActive    sql.NullBool   `json:"is_active"`
+	CreatedAt   sql.NullTime   `json:"created_at"`
+	OwnerID     sql.NullString `json:"owner_id"`
+}
+
+func (q *Queries) ListFamiliesForUser(ctx context.Context, userID sql.NullString) ([]ListFamiliesForUserRow, error) {
 	rows, err := q.db.QueryContext(ctx, listFamiliesForUser, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Family
+	var items []ListFamiliesForUserRow
 	for rows.Next() {
-		var i Family
+		var i ListFamiliesForUserRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
-			&i.CreatedAt,
-			&i.IsActive,
 			&i.Description,
+			&i.IsActive,
+			&i.CreatedAt,
 			&i.OwnerID,
 		); err != nil {
 			return nil, err

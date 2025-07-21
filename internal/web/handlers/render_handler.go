@@ -6,6 +6,7 @@ import (
 	"JoaoRafa19/myhousetask/internal/web/middleware"
 	"JoaoRafa19/myhousetask/internal/web/view/components"
 	"JoaoRafa19/myhousetask/internal/web/view/pages"
+	"fmt"
 	"github.com/alexedwards/scs/v2"
 	"log"
 	"net/http"
@@ -45,6 +46,23 @@ func NewRenderHandler(db *db.Queries, sm *scs.SessionManager) *RenderHandler {
 		statsCardService: statsCardService,
 		familyService:    familyService,
 	}
+}
+
+func (h *RenderHandler) RenderDashboardContent(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserIDFromContext(r.Context())
+	data, _ := h.dashboardService.GetDashboardData(userID)
+	pages.DashboardContent(data).Render(r.Context(), w)
+	components.Sidebar("dashboard").Render(r.Context(), w)
+}
+
+func (h *RenderHandler) ShowDashboardPage(w http.ResponseWriter, r *http.Request) {
+	userID := middleware.GetUserIDFromContext(r.Context())
+	h.logger.Println("Utilizando usuario", userID)
+	data, _ := h.dashboardService.GetDashboardData(userID)
+
+	pages.DashboardPage(data).Render(r.Context(), w)
+	components.Sidebar("dashboard").Render(r.Context(), w)
+
 }
 
 func (h *RenderHandler) DashboardHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,7 +110,7 @@ func (h *RenderHandler) FamiliesTableHTMXHandler(w http.ResponseWriter, r *http.
 
 func (h *RenderHandler) HTMXStatusCard(w http.ResponseWriter, r *http.Request) {
 
-	userID := h.sessionManager.GetString(r.Context(), services.User_id)
+	userID := middleware.GetUserIDFromContext(r.Context())
 	if userID == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -110,16 +128,34 @@ func (h *RenderHandler) HTMXStatusCard(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *RenderHandler) ShowFamiliesPage(w http.ResponseWriter, r *http.Request) {
+func (h *RenderHandler) RenderFamiliesContent(w http.ResponseWriter, r *http.Request) {
+	pages.FamiliesContent().Render(r.Context(), w)
+	components.Sidebar("families").Render(r.Context(), w)
+}
+
+func (h *RenderHandler) RenderUsersContent(writer http.ResponseWriter, request *http.Request) {
+
+}
+
+func (h *RenderHandler) RenderFamiliesList(w http.ResponseWriter, r *http.Request) {
 	userID := middleware.GetUserIDFromContext(r.Context())
 
-	// Chame o serviço para buscar os dados.
-	families, err := h.familyService.GetFamiliesByUserID(r.Context(), userID)
-	if err != nil {
-		h.logger.Printf("Error fetching families for user %s: %v", userID, err)
-		http.Error(w, "Could not load families.", http.StatusInternalServerError)
+	if userID == "" {
+		http.Error(w, "Utilizador não autorizado", http.StatusUnauthorized)
 		return
 	}
 
-	pages.FamiliesPage(families).Render(r.Context(), w)
+	families, err := h.familyService.GetFamiliesByUserID(r.Context(), userID)
+	if err != nil {
+		h.logger.Printf("Erro ao buscar famílias para o utilizador %s: %v", userID, err)
+		http.Error(w, "Não foi possível carregar as famílias", http.StatusInternalServerError)
+		return
+	}
+
+	pages.FamiliesList(families).Render(r.Context(), w)
+}
+
+func (h *RenderHandler) RenderChart(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("RENDERIZANDO O GRÁFICO")
+	components.ActivityChart().Render(r.Context(), w)
 }

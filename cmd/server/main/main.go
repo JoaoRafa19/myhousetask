@@ -51,7 +51,7 @@ func main() {
 
 	mux.Route("/api", func(apiRouter chi.Router) {
 		apiRouter.Post("/register", api.RegisterUserHandler)
-		apiRouter.Post("/login", api.LoginUserHandler)
+		apiRouter.Post("/login", api.LogoutUserHandler)
 
 		apiRouter.Group(func(protectedApiRouter chi.Router) {
 			protectedApiRouter.Use(middleware.AuthRequired(sessionManager))
@@ -65,12 +65,21 @@ func main() {
 
 		protectedRouter.Get("/", render.DashboardHandler)
 		protectedRouter.Get("/logout", api.LogoutUserHandler)
-		protectedRouter.Get("/families", render.ShowFamiliesPage)
+		//protectedRouter.Get("/families", render.ShowFamiliesPage)
+
+		protectedRouter.Route("/htmx/page", func(htmxRouter chi.Router) {
+			htmxRouter.Get("/dashboard", render.RenderDashboardContent)
+			htmxRouter.Get("/families", render.RenderFamiliesContent)
+			htmxRouter.Get("/families-list", render.RenderFamiliesList)
+			htmxRouter.Get("/users", render.RenderUsersContent)
+		})
 
 		protectedRouter.Route("/htmx", func(htmxRouter chi.Router) {
 
 			htmxRouter.Get("/families-table", render.FamiliesTableHTMXHandler)
 			htmxRouter.Get("/stats-card", render.HTMXStatusCard)
+			htmxRouter.Get("/dashboard-chart", render.RenderChart)
+
 		})
 	})
 

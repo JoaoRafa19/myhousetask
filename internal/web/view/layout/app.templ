@@ -29,7 +29,7 @@ templ AppLayout(title string, activePage string, children templ.Component) {
 		<body class="bg-gray-50 text-gray-800">
 			<div x-data="{ sidebarOpen: false }" class="flex h-screen">
 				@components.Sidebar(activePage)
-				<main class="flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64">
+				<main id="main" class="flex-1 flex flex-col transition-all duration-300 ease-in-out lg:ml-64">
 					@children
 				</main>
 			</div>

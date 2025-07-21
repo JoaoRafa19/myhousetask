@@ -5,7 +5,7 @@ go 1.24
 toolchain go1.24.4
 
 require (
-	github.com/a-h/templ v0.3.898
+	github.com/a-h/templ v0.3.920
 	github.com/air-verse/air v1.62.0
 	github.com/alexedwards/scs/mysqlstore v0.0.0-20250417082927-ab20b3feb5e9
 	github.com/alexedwards/scs/v2 v2.8.0

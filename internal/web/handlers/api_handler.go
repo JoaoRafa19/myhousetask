@@ -30,7 +30,6 @@ func NewApiHandler(db *db.Queries, sm *scs.SessionManager) *ApiHandler {
 	}
 }
 
-// 1. Defina uma struct para a resposta JSON que o Chart.js espera.
 type ChartData struct {
 	Labels []string `json:"labels"`
 	Data   []int64  `json:"data"`
@@ -86,7 +85,7 @@ func (h *ApiHandler) CreateFamilyHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	// Get the currently logged-in user ID from session
-	userID := h.sm.GetString(r.Context(), "userID")
+	userID := h.sm.GetString(r.Context(), services.User_id)
 	if userID == "" {
 		http.Error(w, "User not authenticated", http.StatusUnauthorized)
 		return
