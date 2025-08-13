@@ -1,1 +1,0 @@
-drop table IF EXISTS family_members;

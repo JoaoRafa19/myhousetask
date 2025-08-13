@@ -24,7 +24,7 @@ func main() {
 	var opts []grpc.ServerOption
 	server := grpc.NewServer(opts...)
 
-	//	pb.RegisterCategoryServiceServer(server, category.NewCategoryServiceServer(db))
+	//	pb.RegisterCategoryServiceServer(server, category.NewCategoryServiceServer(store))
 
 	log.Printf("Server listening at %v", l.Addr())
 

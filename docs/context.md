@@ -63,7 +63,7 @@ go-grpc-teste/
 
 ### 3.2. Geração de Código com SQLC
 
-- Queries SQL são escritas em `db/query/query.sql`.
+- Queries SQL são escritas em `db/query/family.sql`.
 - O SQLC gera código Go para acesso ao banco em `db/gen/`.
 - Para gerar o código, execute:
   ```sh
@@ -152,7 +152,7 @@ go-grpc-teste/
 
 ### 6.1. Geração de Código SQLC
 
-1. Escreva queries SQL em `db/query/query.sql`.
+1. Escreva queries SQL em `db/query/family.sql`.
 2. Execute `sqlc generate` para gerar código Go.
 3. Utilize os métodos gerados em `db/gen/querier.go` nos serviços.
 
@@ -170,7 +170,7 @@ go-grpc-teste/
 1. Crie scripts `.up.sql` e `.down.sql` em `db/migrations/`.
 2. Aplique migrações com ferramenta apropriada:
    ```sh
-   migrate -path db/migrations -database "postgres://user:pass@localhost:5432/dbname?sslmode=disable" up
+   migrate -path store/migrations -database "postgres://user:pass@localhost:5432/dbname?sslmode=disable" up
    ```
 
 ### 6.4. Build e Deploy com Docker

@@ -1,0 +1,57 @@
+package pages
+
+import (
+"JoaoRafa19/myhousetask/internal/services"
+"JoaoRafa19/myhousetask/store"
+"JoaoRafa19/myhousetask/internal/web/view/layout"
+)
+
+templ TasksPage(data *services.TasksPageData) {
+    @layout.AppLayout(data.SelectedFamily.Name + " - Tasks", "tasks", TasksContent(data))
+}
+
+templ TasksContent(data *services.TasksPageData) {
+    <div id="content" class="p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-semibold text-gray-800">Quadro de Tarefas</h1>
+            
+            <!-- Seletor de Família (futuramente interativo) -->
+            <div>
+                <span class="text-gray-600 mr-2">Família:</span>
+                <span class="font-semibold text-gray-800">{ data.SelectedFamily.Name }</span>
+            </div>
+        </div>
+
+        <!-- Quadro Kanban -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            for _, status := range data.TaskStatus {
+                <div class="bg-gray-100 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-semibold text-gray-700">{ status.Name }</h2>
+                        <button class="text-gray-500 hover:text-gray-700">+</button> <!-- Botão para adicionar tarefa -->
+                    </div>
+                    
+                    <!-- Lista de Tarefas -->
+                    <div class="space-y-4">
+                        for _, task := range data.Tasks {
+                            if task.StatusID.String == status.ID {
+                                @TaskCard(task)
+                            }
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+
+templ TaskCard(task store.GetTasksByFamilyRow) {
+    <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+        <h3 class="font-medium text-gray-800">{ task.Title }</h3>
+        if task.Description.Valid {
+            <p class="text-sm text-gray-600 mt-1">{ task.Description.String }</p>
+        }
+    </div>
+}

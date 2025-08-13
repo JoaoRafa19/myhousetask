@@ -200,7 +200,7 @@ docker run -d --name mysql-myhousetask -p 3308:3306 -e MYSQL_DATABASE=myhousetas
 ### Gerar arquivos do sqlc
 
 ```shell
-sqlc -f db/sqlc.yaml generate
+sqlc -f store/sqlc.yaml generate
 ```
 
 ### Gerar arquivos _templ.go

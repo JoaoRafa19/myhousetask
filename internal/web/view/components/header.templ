@@ -1,16 +1,23 @@
 package components
 
-import "fmt"
-import "strings"
+import (
+	"strings"
+)
+
+func getInitial(name string) string {
+	if len(name) > 0 {
+		return strings.ToUpper(string(name[0]))
+	}
+	return ""
+}
 
 templ Header(title string, userName string) {
 	<header class="bg-white p-4 shadow-md flex justify-between items-center">
 		<h1 class="text-2xl font-bold">{ title }</h1>
-		// Dropdown do Utilizador (Exemplo usando Alpine.js)
 		<div x-data="{ open: false }" class="relative">
 			<button @click="open = !open" class="flex items-center gap-2">
-				<span class="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center font-bold">{{ strings.Split(fmt.Sprintf("%s", userName), "") }}</span>
-				<span>{ fmt.Sprintf("%s", userName) }</span>
+				<span class="bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center font-bold">{ getInitial(userName) }</span>
+				<span>{ userName }</span>
 			</button>
 			<div
 				x-show="open"

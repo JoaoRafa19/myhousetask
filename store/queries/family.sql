@@ -1,0 +1,59 @@
+
+-- name: CreateFamily :execresult
+INSERT INTO families (name, description, owner_id) VALUES (?, ?, ?);
+
+-- name: ListFamiliesForUser :many
+SELECT
+    f.id, f.name, f.description, f.is_active, f.created_at, f.owner_id
+FROM
+    families f
+        JOIN
+    family_members fm ON f.id = fm.family_id
+WHERE
+    fm.user_id = ?
+ORDER BY
+    f.created_at DESC;
+
+
+-- name: DashboardPage :many
+SELECT
+    f.id as id_familia,
+    f.name as nome_familia,
+    DATE_FORMAT(f.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
+    f.is_active as status,
+    (SELECT COUNT(*) FROM family_members WHERE family_id = f.id) as total_membros
+FROM families f
+WHERE f.id IN (
+    SELECT family_id FROM family_members fm WHERE fm.user_id = ?
+)
+ORDER BY f.created_at DESC
+LIMIT 5;
+
+-- name: CountFamilies :one
+SELECT count(*)
+FROM family_members fm
+WHERE fm.user_id = ?;
+
+-- name: CountUsersFamilyMembers :one
+SELECT COUNT(DISTINCT fm2.user_id)
+FROM family_members AS fm1
+         JOIN family_members AS fm2 ON fm1.family_id = fm2.family_id
+WHERE fm1.user_id = ?;
+
+-- name: ListRecentFamilies :many
+SELECT
+    f.id as id_familia,
+    f.name as nome_familia,
+    DATE_FORMAT(f.created_at, '%Y-%m-%d %H:%i:%s') as created_at,
+    f.is_active as status,
+    COUNT(fm.id) as total_membros
+from families f
+LEFT JOIN family_members fm on fm.family_id = f.id
+LEFT JOIN users u on fm.user_id = u.id
+GROUP BY f.id, f.name, f.created_at, f.is_active
+ORDER BY f.created_at DESC
+LIMIT 5;
+
+-- name: CreateFamilyMember :exec
+INSERT INTO family_members (id, family_id, user_id, role)
+VALUES (?, ?, ?, ?);

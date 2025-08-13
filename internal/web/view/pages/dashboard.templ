@@ -1,7 +1,7 @@
 package pages
 
 import (
-	"JoaoRafa19/myhousetask/internal/core/services"
+	"JoaoRafa19/myhousetask/internal/services"
 	"JoaoRafa19/myhousetask/internal/web/view/components"
 	"JoaoRafa19/myhousetask/internal/web/view/layout"
 	"fmt"
@@ -9,7 +9,6 @@ import (
 )
 
 templ DashboardContent(data *services.DashboardData) {
-
 	@components.Header(fmt.Sprintf("Bem-vindo, %s!", strings.Split(data.UserName, " ")[0]), data.UserName)
 	<div class="p-6 md:p-8 flex-1 overflow-y-auto">
 		<div

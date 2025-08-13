@@ -11,15 +11,15 @@ templ CreateFamilyDialog() {
 				</button>
 			</div>
 			<form
-			 hx-swap="none"
-			 hx-post="/api/create-family"
-			 hx-on::after-request="
+				hx-swap="none"
+				hx-post="/api/create-family"
+				hx-on::after-request="
                                  if(event.detail.successful) {
                                      document.getElementById('createFamilyDialog').close();
                                  }
                              "
-			 class="flex flex-col gap-4"
-			 >
+				class="flex flex-col gap-4"
+			>
 				<div class="space-y-4">
 					<div>
 						<label for="familyName" class="block text-sm font-medium text-gray-700">Nome da Família</label>

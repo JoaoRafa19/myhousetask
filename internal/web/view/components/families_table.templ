@@ -2,11 +2,11 @@
 package components
 
 import (
-	"JoaoRafa19/myhousetask/db/gen"
+	"JoaoRafa19/myhousetask/store"
 	"fmt"
 )
 
-templ FamiliesTable(families []db.ListRecentFamiliesRow) {
+templ FamiliesTable(families []store.ListRecentFamiliesRow) {
 	<div class="mt-8 bg-white p-6 rounded-xl shadow-md">
 		<h3 class="font-semibold text-lg text-gray-800">Famílias Recém-Cadastradas</h3>
 		<div class="mt-4 overflow-x-auto">

@@ -2,8 +2,8 @@ package components
 
 templ Sidebar(activePage string) {
 	<aside
-	    id="sidebar"
-	    hx-swap-oob="true"
+		id="sidebar"
+		hx-swap-oob="true"
 		class="fixed inset-y-0 left-0 z-30 flex flex-col w-64 px-4 py-8 overflow-y-auto bg-slate-800 text-slate-200 border-r rtl:border-r-0 rtl:border-l transition-transform duration-300 ease-in-out lg:translate-x-0"
 		:class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 		x-cloak
@@ -54,14 +54,20 @@ templ Sidebar(activePage string) {
 					class="flex items-center px-4 py-3 mt-5 text-slate-300 transition-colors duration-300 transform rounded-lg hover:bg-slate-700 hover:text-white"
 					:class="{ 'bg-slate-700 text-white': activePage === 'tasks', 'text-slate-300 hover:bg-slate-700 hover:text-white': activePage !== 'tasks' }"
 					href="/tasks"
+					hx-get="/htmx/page/tasks"
+					hx-target="#main"
+					hx-swap="innerHTML"
+					hx-push-url="true"
 				>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h9v11h-9Z"></path><path d="M18 14h-8"></path><path d="M18 18h-8"></path><path d="M10 10h.01"></path></svg>
 					<span class="mx-4 font-medium">Tarefas</span>
 				</a>
 			</nav>
 		</div>
-		<a href="#"
-		 class="flex items-center px-4 py-3 mt-5 text-slate-300 transition-colors duration-300 transform rounded-lg hover:bg-slate-700 hover:text-white">
+		<a
+			href="#"
+			class="flex items-center px-4 py-3 mt-5 text-slate-300 transition-colors duration-300 transform rounded-lg hover:bg-slate-700 hover:text-white"
+		>
 			<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
 			<span class="mx-4 font-medium">Configurações</span>
 		</a>
